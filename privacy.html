@@ -12,7 +12,7 @@
 
 <h1>Datenschutzerklärung</h1>
 <p class="lead">Android-App <strong>Yuban</strong>, <code>de.diebis.chineselearning</code></p>
-<p class="meta">Fassung vom 17. November 2026</p>
+<p class="meta">Fassung vom 19. November 2026</p>
 
 <h2>§ 1 Verantwortlicher</h2>
 <p>
@@ -21,10 +21,10 @@ Verantwortlicher nach Art. 4 Nr. 7 DSGVO: Florian Reinhart, Anschrift gemäß <a
 
 <h2>§ 2 Grundsätze</h2>
 <p>
-(1) Verarbeitet werden ausschließlich die Daten nach §§ 3 bis 5. Werbe-IDs werden nicht erhoben; Analyse, Tracking, Profilbildung und Datenverkauf finden nicht statt.
+(1) Verarbeitet werden ausschließlich die Daten nach §§ 3 bis 6. Werbe-IDs werden nicht erhoben; Analyse, Tracking, Profilbildung und Datenverkauf finden nicht statt.
 </p>
 <p>
-(2) Der Anbieter betreibt keinen Anwendungsserver und erhält keine Inhaltsdaten.
+(2) Der Anbieter betreibt keinen Anwendungsserver für Lerninhalte. Für die Übermittlung an das Sprachmodell und die Zählung des Kontingents nutzt er einen Auftragsverarbeiter (§ 4, § 5).
 </p>
 
 <h2>§ 3 Lokale Verarbeitung</h2>
@@ -51,7 +51,7 @@ Verantwortlicher nach Art. 4 Nr. 7 DSGVO: Florian Reinhart, Anschrift gemäß <a
   </tbody>
 </table>
 <p>
-Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung an den Anbieter oder Dritte erfolgt nicht.
+Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung dieser Inhalte an den Anbieter oder Dritte erfolgt nicht.
 </p>
 
 <h2>§ 4 KI-Funktionen (Google Gemini)</h2>
@@ -62,16 +62,33 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung an de
 (2) Empfänger: Google LLC bzw. Google Ireland Limited, Endpunkt <code>generativelanguage.googleapis.com</code>. Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO; Übermittlung nur auf Anforderung des Nutzers.
 </p>
 <p>
-(3) Übermittlung in Drittländer, insbesondere die USA, auf Grundlage des Art. 45 DSGVO (EU-US Data Privacy Framework) bzw. Art. 46 Abs. 2 lit. c DSGVO (Standardvertragsklauseln).
+(3) Die Anfrage läuft über einen Vermittlungsdienst des Anbieters bei Cloudflare, Inc. bzw. Cloudflare Germany GmbH (nachfolgend „Cloudflare"). Cloudflare verarbeitet dabei die vollständige Anfrage einschließlich IP-Adresse und Nachrichtentext als Auftragsverarbeiter nach Art. 28 DSGVO. Mit Cloudflare besteht ein Auftragsverarbeitungsvertrag.
 </p>
 <p>
-(4) Umfang und Dauer der Verarbeitung bei Google richten sich nach den Google-API-Bedingungen und <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>; ein Einfluss des Anbieters besteht nicht.
+(4) Übermittlung in Drittländer, insbesondere die USA, auf Grundlage des Art. 45 DSGVO (EU-US Data Privacy Framework) bzw. Art. 46 Abs. 2 lit. c DSGVO (Standardvertragsklauseln).
 </p>
 <p>
-(5) Die Übermittlung von Daten nach Art. 9 Abs. 1 DSGVO sowie von Daten Dritter ohne Berechtigung ist untersagt.
+(5) Umfang und Dauer der Verarbeitung bei Google richten sich nach den Google-API-Bedingungen und <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>; ein Einfluss des Anbieters besteht nicht.
+</p>
+<p>
+(6) Die Übermittlung von Daten nach Art. 9 Abs. 1 DSGVO sowie von Daten Dritter ohne Berechtigung ist untersagt.
 </p>
 
-<h2>§ 5 Zahlungsabwicklung</h2>
+<h2>§ 5 Gerätekennung und Kontingent</h2>
+<p>
+(1) Für die serverseitige Zählung des Kontingents bildet die App aus der Android-Gerätekennung (<code>ANDROID_ID</code>) und dem Paketnamen einen SHA-256-Hash. Dieser Hash wird als Gerätekennung an den Vermittlungsdienst übermittelt und dort gespeichert. Die rohe <code>ANDROID_ID</code> verlässt das Gerät nicht.
+</p>
+<p>
+(2) Gespeichert werden ausschließlich: die Gerätekennung, der Tarif (Free oder Plus), das Ablaufdatum eines Abonnements sowie die Anzahl der Antworten im laufenden Zeitraum. Eine Zuordnung zu Namen, E-Mail-Adressen oder Standorten ist nicht möglich.
+</p>
+<p>
+(3) Zweck ist die Durchsetzung der Kontingente (Art. 6 Abs. 1 lit. b DSGVO) sowie die Verhinderung von Missbrauch (Art. 6 Abs. 1 lit. f DSGVO).
+</p>
+<p>
+(4) Die Gerätekennung wird nicht an Dritte übermittelt und nicht zu Werbe- oder Analysezwecken verwendet. Sie wird gelöscht, sobald der Zweck entfällt; auf Anfrage jederzeit früher.
+</p>
+
+<h2>§ 6 Zahlungsabwicklung</h2>
 <p>
 (1) Erwerb und Verwaltung des Abonnements erfolgen über Google Play Billing. Der Anbieter erhält ausschließlich Produktkennung, Kaufstatus und Kauftoken, keine Zahlungsdaten.
 </p>
@@ -79,7 +96,7 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung an de
 (2) Zahlungsdaten verarbeitet Google als eigenständig Verantwortlicher; Rechtsgrundlage für den Kaufstatus beim Anbieter ist Art. 6 Abs. 1 lit. b DSGVO.
 </p>
 
-<h2>§ 6 Anki-Import und Sprachausgabe</h2>
+<h2>§ 7 Anki-Import und Sprachausgabe</h2>
 <p>
 (1) Der Anki-Import erfolgt durch lesenden Zugriff auf die lokale Anki-Datenbank, ausschließlich auf Anforderung des Nutzers, ohne Übermittlung an Dritte.
 </p>
@@ -87,25 +104,28 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung an de
 (2) Die Sprachausgabe der kostenlosen Fassung erfolgt über die Sprachsynthese des Endgeräts; für die Premium-Sprachausgabe gilt § 4.
 </p>
 
-<h2>§ 7 Berechtigungen</h2>
+<h2>§ 8 Berechtigungen</h2>
 <p>
 Angefordert werden ausschließlich Internetzugriff und lesender Zugriff auf die Anki-Datenbank. Berechtigungen für Standort, Kamera, Mikrofon, Kontakte, Telefonstatus und allgemeinen Dateizugriff werden nicht angefordert.
 </p>
 
-<h2>§ 8 Empfänger</h2>
+<h2>§ 9 Empfänger</h2>
 <p>
-Empfänger personenbezogener Daten ist ausschließlich Google im Umfang der §§ 4 und 5. Eine Weitergabe zu Werbe- oder Marktforschungszwecken findet nicht statt.
+Empfänger personenbezogener Daten sind ausschließlich Google im Umfang der §§ 4 und 6 sowie Cloudflare im Umfang der §§ 4 und 5. Eine Weitergabe zu Werbe- oder Marktforschungszwecken findet nicht statt.
 </p>
 
-<h2>§ 9 Speicherdauer und Löschung</h2>
+<h2>§ 10 Speicherdauer und Löschung</h2>
 <p>
 (1) Daten nach § 3 werden bis zur Löschung durch den Nutzer gespeichert; Löschung durch Löschen der Inhalte, der App-Daten oder durch Deinstallation.
 </p>
 <p>
-(2) Beim Anbieter werden keine Inhaltsdaten gespeichert. Für die Dauer der Verarbeitung bei Google gilt § 4 Abs. 4.
+(2) Die Gerätekennung nach § 5 wird beim Anbieter gespeichert, solange das Kontingent geführt wird. Löschung ist jederzeit per E-Mail an <a href="mailto:fr@diebis.de">fr@diebis.de</a> möglich.
+</p>
+<p>
+(3) Für die Dauer der Verarbeitung bei Google und Cloudflare gelten deren Bedingungen.
 </p>
 
-<h2>§ 10 Rechte</h2>
+<h2>§ 11 Rechte</h2>
 <p>
 (1) Es bestehen die Rechte nach Art. 15 bis 21 DSGVO, insbesondere Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch.
 </p>
@@ -116,7 +136,7 @@ Empfänger personenbezogener Daten ist ausschließlich Google im Umfang der §§
 (3) Es besteht ein Beschwerderecht bei einer Aufsichtsbehörde nach Art. 77 DSGVO. Eine automatisierte Entscheidungsfindung nach Art. 22 DSGVO findet nicht statt.
 </p>
 
-<h2>§ 11 Minderjährige und Änderungen</h2>
+<h2>§ 12 Minderjährige und Änderungen</h2>
 <p>
 (1) Die App richtet sich nicht an Personen unter 16 Jahren.
 </p>
