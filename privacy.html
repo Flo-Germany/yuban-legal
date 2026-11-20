@@ -12,7 +12,7 @@
 
 <h1>Datenschutzerklärung</h1>
 <p class="lead">Android-App <strong>Yuban</strong>, <code>de.diebis.chineselearning</code></p>
-<p class="meta">Fassung vom 19. November 2026</p>
+<p class="meta">Fassung vom 20. November 2026</p>
 
 <h2>§ 1 Verantwortlicher</h2>
 <p>
@@ -24,7 +24,7 @@ Verantwortlicher nach Art. 4 Nr. 7 DSGVO: Florian Reinhart, Anschrift und Kontak
 (1) Verarbeitet werden ausschließlich die Daten nach §§ 3 bis 6. Werbe-IDs werden nicht erhoben; Analyse, Tracking, Profilbildung und Datenverkauf finden nicht statt.
 </p>
 <p>
-(2) Der Anbieter betreibt keinen Anwendungsserver für Lerninhalte. Für die Übermittlung an das Sprachmodell und die Zählung des Kontingents nutzt er einen Auftragsverarbeiter (§ 4, § 5).
+(2) Der Anbieter betreibt keinen Anwendungsserver für Lerninhalte. Für die Übermittlung an das Sprachmodell, die Zählung des Kontingents sowie den Versand von Tester- und Feedback-E-Mails nutzt er Auftragsverarbeiter (§§ 4, 5, 7).
 </p>
 
 <h2>§ 3 Lokale Verarbeitung</h2>
@@ -68,7 +68,7 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung diese
 (4) Übermittlung in Drittländer, insbesondere die USA, auf Grundlage des Art. 45 DSGVO (EU-US Data Privacy Framework) bzw. Art. 46 Abs. 2 lit. c DSGVO (Standardvertragsklauseln).
 </p>
 <p>
-(5) Umfang und Dauer der Verarbeitung bei Google richten sich nach den Google-API-Bedingungen und <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>; ein Einfluss des Anbieters besteht nicht.
+(5) Umfang und Dauer der Verarbeitung bei Google richten sich nach den Google-API-Bedingungen und <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>; ein Einfluss des Anbieters besteht nicht. Wird der Gemini-API-Dienst im kostenlosen Kontingent genutzt, kann Google die Inhalte zur Verbesserung seiner Produkte verwenden. Im kostenpflichtigen Tarif werden die Inhalte nicht zum Training verwendet.
 </p>
 <p>
 (6) Die Übermittlung von Daten nach Art. 9 Abs. 1 DSGVO sowie von Daten Dritter ohne Berechtigung ist untersagt.
@@ -85,18 +85,32 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung diese
 (3) Zweck ist die Durchsetzung der Kontingente (Art. 6 Abs. 1 lit. b DSGVO) sowie die Verhinderung von Missbrauch (Art. 6 Abs. 1 lit. f DSGVO).
 </p>
 <p>
-(4) Die Gerätekennung wird nicht an Dritte übermittelt und nicht zu Werbe- oder Analysezwecken verwendet. Sie wird gelöscht, sobald der Zweck entfällt; auf Anfrage jederzeit früher.
+(4) Die Gerätekennung wird nicht zu Werbe- oder Analysezwecken verwendet und nicht an Dritte außerhalb der in § 10 genannten Auftragsverarbeiter übermittelt. Sie wird gelöscht, sobald der Zweck entfällt; auf Anfrage jederzeit früher.
 </p>
 
 <h2>§ 6 Zahlungsabwicklung</h2>
 <p>
-(1) Erwerb und Verwaltung des Abonnements erfolgen über Google Play Billing. Der Anbieter erhält ausschließlich Produktkennung, Kaufstatus und Kauftoken, keine Zahlungsdaten.
+(1) Erwerb und Verwaltung des Abonnements erfolgen über Google Play Billing. Der Anbieter erhält ausschließlich Produktkennung, Kaufstatus und Kauftoken, keine Zahlungsdaten. Der Kauftoken wird zur Prüfung und Aktualisierung des Abonnements bei Cloudflare gespeichert und gelöscht, sobald er für die Abrechnung nicht mehr benötigt wird, spätestens nach Ablauf der gesetzlichen Aufbewahrungsfristen.
 </p>
 <p>
 (2) Zahlungsdaten verarbeitet Google als eigenständig Verantwortlicher; Rechtsgrundlage für den Kaufstatus beim Anbieter ist Art. 6 Abs. 1 lit. b DSGVO.
 </p>
 
-<h2>§ 7 Anki-Import und Sprachausgabe</h2>
+<h2>§ 7 Geschlossener Test, Feedback und E-Mail-Versand</h2>
+<p>
+(1) Für die Bewerbung zum geschlossenen Test verarbeitet der Anbieter die E-Mail-Adresse des Google-Kontos, optional eine abweichende Kontakt-E-Mail-Adresse, die Einwilligung, den Zeitpunkt und die Quelle der Anmeldung. Die Daten werden in einer Datenbank bei Cloudflare (D1) gespeichert. Zweck ist die Auswahl, Einladung und Kommunikation mit Testern. Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO. Die Einwilligung kann jederzeit per E-Mail über das <a href="impressum.html#email">Impressum</a> widerrufen werden; die Daten werden dann gelöscht, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+</p>
+<p>
+(2) Für Bestätigungs-, Einladungs- und Absage-E-Mails nutzt der Anbieter den Dienst Resend (Resend, Inc., USA) als Auftragsverarbeiter. Übermittelt werden die E-Mail-Adresse, die Absenderadresse und der Inhalt der jeweiligen E-Mail. Mit Resend besteht ein Auftragsverarbeitungsvertrag; die Übermittlung in die USA erfolgt auf Grundlage des Art. 45 DSGVO (EU-US Data Privacy Framework) bzw. Art. 46 Abs. 2 lit. c DSGVO (Standardvertragsklauseln).
+</p>
+<p>
+(3) Wenn ein Nutzer eine KI-Antwort meldet oder Feedback sendet, werden der Nachrichtentext und die optionale Notiz per E-Mail an den Anbieter gesendet. Eine E-Mail-Adresse des Nutzers ist dafür nicht erforderlich. Zweck ist die Prüfung und Verbesserung der Antworten sowie die Missbrauchsabwehr. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO; soweit der Nutzer freiwillig Kontaktdaten angibt, Art. 6 Abs. 1 lit. a DSGVO. Die Meldung wird im E-Mail-Postfach des Anbieters gespeichert und nach Prüfung gelöscht, spätestens nach zwölf Monaten, sofern keine gesetzlichen Aufbewahrungspflichten bestehen.
+</p>
+<p>
+(4) Die Bewerbungs- und Admin-Seiten werden als statische Seiten über GitHub Pages (GitHub, Inc., USA) bereitgestellt. Beim Aufruf verarbeitet GitHub technisch notwendige Verbindungsdaten (insbesondere IP-Adresse, Zeitpunkt und User-Agent) als Auftragsverarbeiter. Die Seiten und das Kontaktformular im Impressum nutzen Cloudflare Turnstile zur Spam-Abwehr; dabei verarbeitet Cloudflare IP-Adresse und Browserdaten. Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Sicherheit der Anmeldung).
+</p>
+
+<h2>§ 8 Anki-Import und Sprachausgabe</h2>
 <p>
 (1) Der Anki-Import erfolgt durch lesenden Zugriff auf die lokale Anki-Datenbank, ausschließlich auf Anforderung des Nutzers, ohne Übermittlung an Dritte.
 </p>
@@ -104,17 +118,17 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b und lit. f DSGVO. Eine Übermittlung diese
 (2) Die Sprachausgabe der kostenlosen Fassung erfolgt über die Sprachsynthese des Endgeräts; für die Premium-Sprachausgabe gilt § 4.
 </p>
 
-<h2>§ 8 Berechtigungen</h2>
+<h2>§ 9 Berechtigungen</h2>
 <p>
 Angefordert werden ausschließlich Internetzugriff und lesender Zugriff auf die Anki-Datenbank. Berechtigungen für Standort, Kamera, Mikrofon, Kontakte, Telefonstatus und allgemeinen Dateizugriff werden nicht angefordert.
 </p>
 
-<h2>§ 9 Empfänger</h2>
+<h2>§ 10 Empfänger</h2>
 <p>
-Empfänger personenbezogener Daten sind ausschließlich Google im Umfang der §§ 4 und 6 sowie Cloudflare im Umfang der §§ 4 und 5. Eine Weitergabe zu Werbe- oder Marktforschungszwecken findet nicht statt.
+Empfänger personenbezogener Daten sind Google im Umfang der §§ 4 und 6, Cloudflare im Umfang der §§ 4, 5 und 7, Resend im Umfang des § 7 sowie GitHub Pages im Umfang des § 7. Der E-Mail-Anbieter des Postfachs verarbeitet die an den Anbieter gesendeten Meldungen und Feedback-E-Mails. Eine Weitergabe zu Werbe- oder Marktforschungszwecken findet nicht statt.
 </p>
 
-<h2>§ 10 Speicherdauer und Löschung</h2>
+<h2>§ 11 Speicherdauer und Löschung</h2>
 <p>
 (1) Daten nach § 3 werden bis zur Löschung durch den Nutzer gespeichert; Löschung durch Löschen der Inhalte, der App-Daten oder durch Deinstallation.
 </p>
@@ -122,21 +136,30 @@ Empfänger personenbezogener Daten sind ausschließlich Google im Umfang der §�
 (2) Die Gerätekennung nach § 5 wird beim Anbieter gespeichert, solange das Kontingent geführt wird. Löschung ist jederzeit per E-Mail über das <a href="impressum.html#email">Impressum</a> möglich.
 </p>
 <p>
-(3) Für die Dauer der Verarbeitung bei Google und Cloudflare gelten deren Bedingungen.
+(3) Tester-Daten nach § 7 werden bis zum Abschluss des geschlossenen Tests und längstens drei Monate danach gespeichert, sofern keine Einwilligung für weitere Tests vorliegt oder keine gesetzlichen Aufbewahrungspflichten entgegenstehen. Nach Widerruf der Einwilligung werden sie gelöscht.
+</p>
+<p>
+(4) Meldungen und Feedback-E-Mails nach § 7 werden nach Prüfung, spätestens nach zwölf Monaten gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+</p>
+<p>
+(5) Der Kauftoken nach § 6 wird gelöscht, sobald er für die Abrechnung nicht mehr benötigt wird, spätestens nach Ablauf der gesetzlichen Aufbewahrungsfristen.
+</p>
+<p>
+(6) Für die Dauer der Verarbeitung bei Google, Cloudflare, Resend und GitHub gelten deren Bedingungen.
 </p>
 
-<h2>§ 11 Rechte</h2>
+<h2>§ 12 Rechte</h2>
 <p>
 (1) Es bestehen die Rechte nach Art. 15 bis 21 DSGVO, insbesondere Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch.
 </p>
 <p>
-(2) Die Rechte sind gegenüber dem Verantwortlichen nach § 1 geltend zu machen; soweit Daten ausschließlich bei Google verarbeitet werden, gegenüber Google.
+(2) Die Rechte sind gegenüber dem Verantwortlichen nach § 1 geltend zu machen; soweit Daten ausschließlich bei Google, Cloudflare, Resend oder GitHub verarbeitet werden, auch gegenüber dem jeweiligen Anbieter.
 </p>
 <p>
 (3) Es besteht ein Beschwerderecht bei einer Aufsichtsbehörde nach Art. 77 DSGVO. Eine automatisierte Entscheidungsfindung nach Art. 22 DSGVO findet nicht statt.
 </p>
 
-<h2>§ 12 Minderjährige und Änderungen</h2>
+<h2>§ 13 Minderjährige und Änderungen</h2>
 <p>
 (1) Die App richtet sich nicht an Personen unter 16 Jahren.
 </p>
