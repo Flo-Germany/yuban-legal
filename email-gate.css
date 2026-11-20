@@ -1,0 +1,117 @@
+.email-gate {
+  margin: 0.85rem 0 1.1rem;
+  padding: 1rem 1.15rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.email-gate__label {
+  margin: 0 0 0.25rem;
+  font-weight: 650;
+}
+
+.email-gate__hint {
+  margin: 0 0 0.8rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.email-gate__button,
+.email-gate__option,
+.email-gate__copy {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+  padding: 0.55rem 0.9rem;
+  transition: filter 120ms ease, border-color 120ms ease;
+}
+
+.email-gate__button {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 650;
+}
+
+.email-gate__option {
+  min-width: 3rem;
+  font-weight: 650;
+}
+
+.email-gate__button:hover,
+.email-gate__option:hover,
+.email-gate__copy:hover {
+  filter: brightness(1.05);
+}
+
+.email-gate__option:hover {
+  border-color: var(--accent);
+}
+
+.email-gate__button:focus-visible,
+.email-gate__option:focus-visible,
+.email-gate__copy:focus-visible,
+.email-gate__mail:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.email-gate__challenge {
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+
+.email-gate__question {
+  margin: 0 0 0.65rem;
+  font-weight: 600;
+}
+
+.email-gate__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.email-gate__error {
+  margin: 0.7rem 0 0;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.email-gate__result {
+  margin-top: 0.85rem;
+}
+
+.email-gate__ready {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.email-gate__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.email-gate__mail {
+  font-size: 1.08rem;
+  font-weight: 650;
+  word-break: break-all;
+  color: var(--accent);
+}
+
+.email-gate__copy {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.7rem;
+}
+
+[hidden] {
+  display: none !important;
+}

@@ -6,6 +6,8 @@
 <title>Impressum – Yuban</title>
 <meta name="description" content="Impressum der Android-App Yuban gemäß § 5 DDG.">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="email-gate.css">
+<script src="email-gate.js" defer></script>
 </head>
 <body>
 <main>
@@ -18,8 +20,15 @@
 Florian Reinhart<br>
 <!-- TODO: Postanschrift vor Veröffentlichung eintragen -->
 Anschrift: wird ergänzt<br>
-E-Mail: <a href="mailto:fr@diebis.de">fr@diebis.de</a>
 </p>
+<div class="email-gate" id="email" data-email-gate>
+  <p class="email-gate__label">E-Mail</p>
+  <p class="email-gate__hint">Zum Schutz vor Spam bitte bestätigen, dass Sie ein Mensch sind.</p>
+  <button class="email-gate__button" type="button" data-email-start>E-Mail-Adresse anzeigen</button>
+  <div class="email-gate__challenge" data-email-challenge hidden></div>
+  <div class="email-gate__result" data-email-result hidden aria-live="polite"></div>
+  <noscript><p class="email-gate__hint">Bitte aktivieren Sie JavaScript, um die E-Mail-Adresse anzuzeigen.</p></noscript>
+</div>
 <p>
 Kontakt per E-Mail. Keine Registereintragung; keine Umsatzsteuer-Identifikationsnummer nach § 27a UStG.
 </p>
@@ -50,7 +59,7 @@ Keine Verpflichtung und keine Bereitschaft zur Teilnahme an Streitbeilegungsverf
 </nav>
 
 <footer>
-  Yuban &middot; <a href="mailto:fr@diebis.de">fr@diebis.de</a>
+  Yuban &middot; <a href="#email">E-Mail anzeigen</a>
 </footer>
 
 </main>
