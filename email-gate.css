@@ -12,75 +12,13 @@
 }
 
 .email-gate__hint {
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.7rem;
   color: var(--muted);
   font-size: 0.92rem;
 }
 
-.email-gate__button,
-.email-gate__option,
-.email-gate__copy {
-  font: inherit;
-  cursor: pointer;
-  border-radius: 10px;
-  border: 1px solid var(--line);
-  background: var(--bg);
-  color: var(--fg);
-  padding: 0.55rem 0.9rem;
-  transition: filter 120ms ease, border-color 120ms ease;
-}
-
-.email-gate__button {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--bg);
-  font-weight: 650;
-}
-
-.email-gate__option {
-  min-width: 3rem;
-  font-weight: 650;
-}
-
-.email-gate__button:hover,
-.email-gate__option:hover,
-.email-gate__copy:hover {
-  filter: brightness(1.05);
-}
-
-.email-gate__option:hover {
-  border-color: var(--accent);
-}
-
-.email-gate__button:focus-visible,
-.email-gate__option:focus-visible,
-.email-gate__copy:focus-visible,
-.email-gate__mail:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.email-gate__challenge {
-  margin-top: 0.9rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid var(--line);
-}
-
-.email-gate__question {
-  margin: 0 0 0.65rem;
-  font-weight: 600;
-}
-
-.email-gate__options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.email-gate__error {
-  margin: 0.7rem 0 0;
-  color: var(--accent);
-  font-size: 0.9rem;
+.email-gate .cf-turnstile {
+  margin: 0.15rem 0 0.2rem;
 }
 
 .email-gate__result {
@@ -108,8 +46,30 @@
 }
 
 .email-gate__copy {
+  font: inherit;
+  cursor: pointer;
   font-size: 0.9rem;
   padding: 0.4rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.email-gate__copy:hover {
+  filter: brightness(1.05);
+}
+
+.email-gate__mail:focus-visible,
+.email-gate__copy:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.email-gate__error {
+  margin: 0.7rem 0 0;
+  color: var(--accent);
+  font-size: 0.9rem;
 }
 
 [hidden] {

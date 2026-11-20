@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="email-gate.css">
 <script src="email-gate.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 <main>
@@ -23,10 +24,13 @@ Anschrift: wird ergänzt<br>
 </p>
 <div class="email-gate" id="email" data-email-gate>
   <p class="email-gate__label">E-Mail</p>
-  <p class="email-gate__hint">Zum Schutz vor Spam bitte bestätigen, dass Sie ein Mensch sind.</p>
-  <button class="email-gate__button" type="button" data-email-start>E-Mail-Adresse anzeigen</button>
-  <div class="email-gate__challenge" data-email-challenge hidden></div>
+  <p class="email-gate__hint">Zum Schutz vor Spam bitte die CAPTCHA-Bestätigung abschließen.</p>
+  <div class="cf-turnstile"
+       data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
+       data-callback="onYubanCaptcha"
+       data-theme="auto"></div>
   <div class="email-gate__result" data-email-result hidden aria-live="polite"></div>
+  <p class="email-gate__error" data-email-error hidden role="alert"></p>
   <noscript><p class="email-gate__hint">Bitte aktivieren Sie JavaScript, um die E-Mail-Adresse anzuzeigen.</p></noscript>
 </div>
 <p>
