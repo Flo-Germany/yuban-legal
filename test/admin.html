@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Yuban – Tester-Übersicht</title>
+<link rel="stylesheet" href="tester.css">
+<script src="admin.js" defer></script>
+</head>
+<body>
+<header class="site-head">
+  <span class="brand">YUBAN</span>
+  <span class="badge">Tester-Übersicht</span>
+</header>
+
+<main>
+  <p class="kicker">ADMIN</p>
+  <h1>Wer möchte testen?</h1>
+  <p class="lead">
+    Anmeldungen aus dem geschlossenen Test. Einladen verschickt die E-Mail mit dem
+    Play-Opt-in-Link; Absagen schickt eine freundliche Absage.
+  </p>
+
+  <div class="admin-toolbar">
+    <label class="field">
+      <span>Admin-Token</span>
+      <input id="admin-token" type="password" autocomplete="off"
+             placeholder="Token aus .admin-token">
+    </label>
+    <button id="load-button" class="button" type="button">Übersicht laden</button>
+    <button id="clear-button" class="small-button" type="button">Abmelden</button>
+  </div>
+
+  <p id="admin-status" class="admin-status" role="status" aria-live="polite"></p>
+  <p id="summary" class="summary"></p>
+
+  <div class="table-wrap" id="table-wrap" hidden>
+    <table>
+      <thead>
+        <tr>
+          <th>Datum</th>
+          <th>Google</th>
+          <th>Kontakt</th>
+          <th>Status</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody id="tester-rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <span>Yuban · interner Bereich</span>
+  <a href="index.html">Zur Bewerbungsseite</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Yuban – Geschlossener Test</title>
+<link rel="stylesheet" href="tester.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="tester.js" defer></script>
+</head>
+<body>
+<header class="site-head">
+  <a class="brand" href="../index.html">YUBAN</a>
+  <span class="badge">Geschlossener Test</span>
+</header>
+
+<main>
+  <p class="kicker">GESCHLOSSENER TEST · ANDROID</p>
+  <h1>Werde einer von 12 Testern.</h1>
+  <p class="lead">
+    Ich baue Yuban, eine Chinesisch-App für Deutschsprachige. Für den letzten Schliff
+    suche ich 12 Leute, die 14 Tage mitmachen und mir sagen, was verwirrt, was fehlt
+    und was bleiben soll.
+  </p>
+
+  <ul class="facts">
+    <li><strong>14 Tage</strong><span>ununterbrochen dabei</span></li>
+    <li><strong>5–10 Min.</strong><span>pro Tag reichen</span></li>
+    <li><strong>kostenlos</strong><span>Plus während des Tests</span></li>
+  </ul>
+
+  <section class="grid">
+    <article class="card">
+      <h2>Das bekommst du</h2>
+      <ul>
+        <li>Yuban Plus kostenlos während des Tests</li>
+        <li>Direkten Draht zu mir — keine Support-Warteschlange</li>
+        <li>Frühen Zugriff auf neue Funktionen</li>
+      </ul>
+    </article>
+    <article class="card">
+      <h2>Das brauche ich</h2>
+      <ul>
+        <li>Ein Android-Gerät</li>
+        <li>Ein Google-Konto für den Play-Test</li>
+        <li>14 Tage Zeit und ehrliches Feedback</li>
+      </ul>
+    </article>
+  </section>
+
+  <section id="form-card" class="card form-card">
+    <h2>Bewerbung</h2>
+    <p class="muted">
+      Ich melde mich per E-Mail, sobald ich dich zum Test hinzufüge — oder um dir zu
+      sagen, dass es diesmal nicht geklappt hat.
+    </p>
+
+    <form id="tester-form" novalidate>
+      <label class="consent">
+        <input type="checkbox" id="consent">
+        <span>
+          Ich interessiere mich für Chinesischlernen und möchte aktiv dazu beitragen,
+          die App besser zu machen. Ich stimme zu, dass meine E-Mail-Adresse zum Zweck
+          der Durchführung des geschlossenen Tests gespeichert und verwendet wird. Ich
+          kann die Einwilligung jederzeit per E-Mail widerrufen.
+        </span>
+      </label>
+
+      <label class="field">
+        <span>E-Mail-Adresse deines Google-Kontos</span>
+        <input id="google-email" type="email" autocomplete="email" required
+               placeholder="du@gmail.com">
+      </label>
+
+      <label class="field">
+        <span>E-Mail zum Kontaktieren <em>(optional)</em></span>
+        <input id="contact-email" type="email" autocomplete="email"
+               placeholder="andere@adresse.de">
+        <small>Lass das Feld leer, wenn die Adresse mit deiner Google-E-Mail übereinstimmt.</small>
+      </label>
+
+      <div class="captcha-wrap">
+        <div class="cf-turnstile"
+             data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
+             data-callback="onTesterCaptcha"
+             data-theme="auto"></div>
+      </div>
+
+      <button id="submit-button" class="button" type="submit">Für den Test anmelden</button>
+      <p id="form-status" class="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="success-card" class="card success-card" hidden>
+    <h2>Angemeldet.</h2>
+    <p>
+      Deine Anmeldung ist gespeichert. Du bekommst eine E-Mail, sobald ich dich zum
+      Test hinzufüge — und auch, falls es diesmal nicht klappt.
+    </p>
+    <p id="success-warning" class="warning" hidden></p>
+  </section>
+
+  <p class="privacy">
+    Details zur Verarbeitung stehen in der
+    <a href="../privacy.html">Datenschutzerklärung</a>. Anbieter ist Florian Reinhart,
+    Kontakt über das <a href="../impressum.html#email">Impressum</a>.
+  </p>
+</main>
+
+<footer class="site-foot">
+  <span>Yuban · Geschlossener Test</span>
+  <a href="../index.html">Startseite</a>
+</footer>
+</body>
+</html>
