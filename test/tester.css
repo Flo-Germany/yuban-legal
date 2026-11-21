@@ -362,6 +362,35 @@ tr:last-child td {
   color: var(--danger);
 }
 
+.status-play {
+  background: rgba(129, 201, 172, 0.16);
+  color: #81c9ac;
+}
+
+.status-new {
+  background: rgba(179, 186, 203, 0.14);
+  color: var(--muted);
+}
+
+.copy-box {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  resize: vertical;
+  word-break: break-all;
+}
+
+.copy-box:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
 .row-actions {
   display: flex;
   flex-wrap: wrap;
