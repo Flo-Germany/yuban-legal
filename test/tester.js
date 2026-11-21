@@ -6,6 +6,7 @@
   "use strict";
 
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
+  var REQUEST_TIMEOUT_MS = 20000;
   var form = document.getElementById("tester-form");
   if (!form) return;
 
@@ -16,11 +17,6 @@
   var status = document.getElementById("form-status");
   var successCard = document.getElementById("success-card");
   var successWarning = document.getElementById("success-warning");
-  var captchaToken = "";
-
-  window.onTesterCaptcha = function (token) {
-    captchaToken = token;
-  };
 
   function setStatus(message, isError) {
     status.textContent = message;
@@ -31,8 +27,12 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
+  function captchaToken() {
+    return window.__testerCaptchaToken || "";
+  }
+
   function resetCaptcha() {
-    captchaToken = "";
+    window.__testerCaptchaToken = "";
     if (window.turnstile) window.turnstile.reset();
   }
 
@@ -40,6 +40,7 @@
     event.preventDefault();
     var email = googleEmail.value.trim();
     var contact = contactEmail.value.trim();
+    var token = captchaToken();
 
     if (!consent.checked) {
       setStatus("Bitte bestätige zuerst die Einwilligung.", true);
@@ -55,13 +56,18 @@
       contactEmail.focus();
       return;
     }
-    if (!captchaToken) {
+    if (!token) {
       setStatus("Bitte schließe zuerst die CAPTCHA-Bestätigung ab.", true);
       return;
     }
 
     submit.disabled = true;
     setStatus("Wird gesendet …", false);
+
+    var controller = new AbortController();
+    var timer = setTimeout(function () {
+      controller.abort();
+    }, REQUEST_TIMEOUT_MS);
 
     fetch(API_BASE + "/tester-signup", {
       method: "POST",
@@ -70,11 +76,13 @@
         googleEmail: email,
         contactEmail: contact,
         consent: true,
-        token: captchaToken,
+        token: token,
         source: "web",
       }),
+      signal: controller.signal,
     })
       .then(function (response) {
+        clearTimeout(timer);
         return response.json().then(function (body) {
           return { status: response.status, body: body };
         });
@@ -100,6 +108,8 @@
           setStatus("Diese Google-E-Mail-Adresse ist bereits angemeldet.", true);
         } else if (result.status === 400) {
           setStatus("Bitte prüfe die Eingaben und versuche es erneut.", true);
+        } else if (result.status === 403) {
+          setStatus("Die CAPTCHA-Prüfung ist abgelaufen. Bitte bestätige sie erneut.", true);
         } else if (result.status === 503) {
           setStatus(
             "Die Anmeldung ist gerade nicht möglich. Bitte versuche es später erneut.",
@@ -109,10 +119,18 @@
           setStatus("Die Anmeldung konnte nicht gesendet werden. Bitte später erneut.", true);
         }
       })
-      .catch(function () {
+      .catch(function (error) {
+        clearTimeout(timer);
         submit.disabled = false;
         resetCaptcha();
-        setStatus("Keine Verbindung. Bitte prüfe dein Netz und versuche es erneut.", true);
+        if (error && error.name === "AbortError") {
+          setStatus(
+            "Die Verbindung dauert zu lange. Bitte prüfe dein VPN/Netz und versuche es erneut.",
+            true,
+          );
+        } else {
+          setStatus("Keine Verbindung. Bitte prüfe dein Netz und versuche es erneut.", true);
+        }
       });
   });
 })();

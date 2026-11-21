@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Geschlossener Test</title>
+<script>
+  window.__testerCaptchaToken = "";
+  window.onTesterCaptcha = function (token) {
+    window.__testerCaptchaToken = token;
+  };
+</script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script src="tester.js" defer></script>
 </head>
