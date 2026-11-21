@@ -14,6 +14,10 @@
   var summary = document.getElementById("summary");
   var tableWrap = document.getElementById("table-wrap");
   var rows = document.getElementById("tester-rows");
+  var surveyUrl = document.getElementById("survey-url");
+  var surveyButton = document.getElementById("survey-button");
+  var surveyStatus = document.getElementById("survey-status");
+  var lastTesters = null;
   if (!tokenInput || !rows) return;
 
   var saved = sessionStorage.getItem(TOKEN_KEY);
@@ -22,6 +26,12 @@
   function setStatus(message, isError) {
     status.textContent = message;
     status.classList.toggle("error", Boolean(isError));
+  }
+
+  function setSurveyStatus(message, isError) {
+    if (!surveyStatus) return;
+    surveyStatus.textContent = message;
+    surveyStatus.classList.toggle("error", Boolean(isError));
   }
 
   function statusLabel(value) {
@@ -90,7 +100,73 @@
     }
   }
 
+  async function sendSurvey() {
+    var token = tokenInput.value.trim();
+    if (!token) {
+      setSurveyStatus("Bitte den Admin-Token eingeben.", true);
+      return;
+    }
+    if (!lastTesters) {
+      setSurveyStatus("Bitte zuerst die Übersicht laden.", true);
+      return;
+    }
+
+    var recipients = lastTesters.filter(function (tester) {
+      return tester.status !== "declined";
+    });
+    if (recipients.length === 0) {
+      setSurveyStatus("Keine offenen oder eingeladenen Tester.", true);
+      return;
+    }
+
+    var formUrl = surveyUrl ? surveyUrl.value.trim() : "";
+    if (!/^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)/i.test(formUrl)) {
+      setSurveyStatus(
+        "Bitte einen gültigen Google-Forms-Link einfügen (forms.gle oder docs.google.com/forms).",
+        true,
+      );
+      return;
+    }
+    if (!window.confirm("Umfrage an " + recipients.length + " Tester senden?")) return;
+
+    surveyButton.disabled = true;
+    setSurveyStatus("Wird gesendet …", false);
+
+    try {
+      var response = await fetch(API_BASE + "/testers/survey", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ formUrl: formUrl }),
+      });
+      var body = await response.json().catch(function () { return {}; });
+
+      if (response.ok) {
+        var message = body.sent + " Mails gesendet.";
+        if (body.failed) message += " " + body.failed + " fehlgeschlagen.";
+        setSurveyStatus(message, body.failed > 0);
+      } else if (response.status === 401) {
+        setSurveyStatus("Der Admin-Token ist falsch.", true);
+      } else if (body.error === "mail_not_configured") {
+        setSurveyStatus("Resend ist im Worker noch nicht eingerichtet.", true);
+      } else if (body.error === "invalid_form_url") {
+        setSurveyStatus("Der Link ist keine gültige Google-Forms-URL.", true);
+      } else if (body.error === "too_many_recipients") {
+        setSurveyStatus("Zu viele Empfänger (max. " + body.limit + ").", true);
+      } else {
+        setSurveyStatus("Die Umfrage konnte nicht gesendet werden.", true);
+      }
+    } catch {
+      setSurveyStatus("Keine Verbindung zum Worker.", true);
+    } finally {
+      surveyButton.disabled = false;
+    }
+  }
+
   function render(testers) {
+    lastTesters = testers;
     rows.replaceChildren();
     var counts = { pending: 0, invited: 0, declined: 0 };
 
@@ -162,14 +238,17 @@
       if (response.status === 401) {
         setStatus("Der Admin-Token ist falsch.", true);
         tableWrap.hidden = true;
+        lastTesters = null;
         return;
       }
       if (response.status === 503) {
         setStatus("Der Admin-Bereich ist im Worker noch nicht eingerichtet.", true);
+        lastTesters = null;
         return;
       }
       if (!response.ok) {
         setStatus("Die Übersicht konnte nicht geladen werden.", true);
+        lastTesters = null;
         return;
       }
       setStatus("", false);
@@ -180,6 +259,7 @@
   }
 
   loadButton.addEventListener("click", load);
+  if (surveyButton) surveyButton.addEventListener("click", sendSurvey);
   tokenInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") load();
   });
@@ -189,6 +269,9 @@
     rows.replaceChildren();
     summary.textContent = "";
     tableWrap.hidden = true;
+    lastTesters = null;
+    if (surveyUrl) surveyUrl.value = "";
+    setSurveyStatus("", false);
     setStatus("Abgemeldet.", false);
   });
 

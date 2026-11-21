@@ -49,6 +49,26 @@
       <tbody id="tester-rows"></tbody>
     </table>
   </div>
+
+  <section class="card">
+    <h2>Umfrage senden</h2>
+    <p class="muted">
+      Schickt allen offenen und eingeladenen Testern eine E-Mail mit dem
+      Google-Forms-Link. Abgesagte werden übersprungen.
+    </p>
+    <label class="field">
+      <span>Google-Forms-Link</span>
+      <input id="survey-url" type="url" placeholder="https://forms.gle/...">
+    </label>
+    <button id="survey-button" class="button" type="button">
+      Umfrage an alle Tester senden
+    </button>
+    <p id="survey-status" class="admin-status" role="status" aria-live="polite"></p>
+    <p class="muted">
+      Formular erstellen:
+      <a href="https://forms.google.com" target="_blank" rel="noopener">forms.google.com</a>
+    </p>
+  </section>
 </main>
 
 <footer class="site-foot">
