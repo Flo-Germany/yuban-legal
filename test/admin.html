@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Tester-Übersicht</title>
-<link rel="stylesheet" href="tester.css?v=20261121b">
-<script src="admin.js?v=20261121b" defer></script>
+<link rel="stylesheet" href="tester.css?v=20261121c">
+<script src="admin.js?v=20261121c" defer></script>
 </head>
 <body>
 <header class="site-head">
@@ -95,6 +95,33 @@
       Formular erstellen:
       <a href="https://forms.google.com" target="_blank" rel="noopener">forms.google.com</a>
     </p>
+  </section>
+  <section class="card">
+    <h2>E-Mail-Texte</h2>
+    <p class="muted">
+      Betreff und Text der Test-Mails. Platzhalter in doppelten Klammern werden beim
+      Versand ersetzt; gespeicherte Fassungen gelten sofort für die nächste Mail.
+    </p>
+    <label class="field">
+      <span>Vorlage</span>
+      <select id="mail-key" disabled></select>
+    </label>
+    <label class="field">
+      <span>Betreff</span>
+      <input id="mail-subject" type="text" maxlength="200" autocomplete="off" disabled>
+    </label>
+    <label class="field">
+      <span>Text</span>
+      <textarea id="mail-body" class="copy-box" rows="12" disabled></textarea>
+      <small id="mail-hint"></small>
+    </label>
+    <div class="row-actions">
+      <button id="mail-save" class="button" type="button" disabled>Vorlage speichern</button>
+      <button id="mail-reset" class="small-button" type="button" disabled>
+        Standard wiederherstellen
+      </button>
+    </div>
+    <p id="mail-status" class="admin-status" role="status" aria-live="polite"></p>
   </section>
 </main>
 

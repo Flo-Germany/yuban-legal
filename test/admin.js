@@ -23,6 +23,14 @@
   var playStatus = document.getElementById("play-status");
   var playPreview = document.getElementById("play-preview");
   var playPreviewWrap = document.getElementById("play-preview-wrap");
+  var mailKey = document.getElementById("mail-key");
+  var mailSubject = document.getElementById("mail-subject");
+  var mailBody = document.getElementById("mail-body");
+  var mailHint = document.getElementById("mail-hint");
+  var mailSave = document.getElementById("mail-save");
+  var mailReset = document.getElementById("mail-reset");
+  var mailStatus = document.getElementById("mail-status");
+  var mailTemplates = [];
   var lastTesters = null;
   if (!tokenInput || !rows) return;
 
@@ -44,6 +52,12 @@
     if (!playStatus) return;
     playStatus.textContent = message;
     playStatus.classList.toggle("error", Boolean(isError));
+  }
+
+  function setMailStatus(message, isError) {
+    if (!mailStatus) return;
+    mailStatus.textContent = message;
+    mailStatus.classList.toggle("error", Boolean(isError));
   }
 
   function statusLabel(value) {
@@ -312,6 +326,159 @@
     setPlayStatus(lastTesters.length + " Zeilen als CSV heruntergeladen.", false);
   }
 
+  function currentTemplate() {
+    if (!mailKey) return null;
+    return (
+      mailTemplates.filter(function (template) {
+        return template.key === mailKey.value;
+      })[0] || null
+    );
+  }
+
+  function placeholderList(names) {
+    return names
+      .map(function (name) {
+        return "{{" + name + "}}";
+      })
+      .join(", ");
+  }
+
+  function showTemplate() {
+    var template = currentTemplate();
+    if (!template) return;
+    if (mailSubject) mailSubject.value = template.subject;
+    if (mailBody) mailBody.value = template.body;
+    if (mailHint) {
+      mailHint.textContent = template.placeholders.length
+        ? "Pflicht-Platzhalter: " + placeholderList(template.placeholders)
+        : "Diese Vorlage braucht keine Platzhalter.";
+    }
+    if (mailReset) mailReset.disabled = !template.custom;
+    setMailStatus(template.custom ? "Eigene Fassung gespeichert." : "Standardtext aktiv.", false);
+  }
+
+  async function loadMailTemplates(selectKey) {
+    if (!mailKey || !mailSave) return;
+    var token = tokenInput.value.trim();
+    if (!token) return;
+
+    try {
+      var response = await fetch(API_BASE + "/admin/mails", {
+        headers: { authorization: "Bearer " + token },
+      });
+      var body = await response.json().catch(function () { return {}; });
+      if (!response.ok) {
+        if (response.status === 401) {
+          setMailStatus("Der Admin-Token ist falsch.", true);
+        } else if (body.error === "templates_not_configured") {
+          setMailStatus("Die Tabelle für E-Mail-Vorlagen fehlt im Worker.", true);
+        } else {
+          setMailStatus("Die E-Mail-Vorlagen konnten nicht geladen werden.", true);
+        }
+        return;
+      }
+
+      mailTemplates = body.templates || [];
+      mailKey.replaceChildren();
+      mailTemplates.forEach(function (template) {
+        var option = document.createElement("option");
+        option.value = template.key;
+        option.textContent = template.label + (template.custom ? " (eigene Fassung)" : "");
+        mailKey.appendChild(option);
+      });
+      if (selectKey) mailKey.value = selectKey;
+      else if (!mailKey.value && mailTemplates.length > 0) {
+        mailKey.value = mailTemplates[0].key;
+      }
+      mailKey.disabled = false;
+      if (mailSubject) mailSubject.disabled = false;
+      if (mailBody) mailBody.disabled = false;
+      mailSave.disabled = false;
+      showTemplate();
+    } catch {
+      setMailStatus("Keine Verbindung zum Worker.", true);
+    }
+  }
+
+  async function saveTemplate() {
+    var template = currentTemplate();
+    if (!template) {
+      setMailStatus("Bitte zuerst die Übersicht laden.", true);
+      return;
+    }
+    var subject = mailSubject ? mailSubject.value.trim() : "";
+    var bodyText = mailBody ? mailBody.value.trim() : "";
+    if (!subject || !bodyText) {
+      setMailStatus("Betreff und Text dürfen nicht leer sein.", true);
+      return;
+    }
+
+    var missing = template.placeholders.filter(function (name) {
+      return bodyText.indexOf("{{" + name + "}}") === -1;
+    });
+    if (missing.length > 0) {
+      setMailStatus("Es fehlen Platzhalter: " + placeholderList(missing), true);
+      return;
+    }
+
+    await postTemplate({
+      key: template.key,
+      subject: subject,
+      body: bodyText,
+    }, "Vorlage gespeichert. Sie gilt ab der nächsten Mail.");
+  }
+
+  async function resetTemplate() {
+    var template = currentTemplate();
+    if (!template) return;
+    if (!window.confirm("Standardtext für „" + template.label + "“ wiederherstellen?")) return;
+
+    await postTemplate(
+      { key: template.key, reset: true },
+      "Standardtext wiederhergestellt.",
+    );
+  }
+
+  async function postTemplate(payload, successMessage) {
+    var token = tokenInput.value.trim();
+    if (!token) {
+      setMailStatus("Bitte den Admin-Token eingeben.", true);
+      return;
+    }
+
+    if (mailSave) mailSave.disabled = true;
+    setMailStatus("Wird gespeichert …", false);
+
+    try {
+      var response = await fetch(API_BASE + "/admin/mails", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      var body = await response.json().catch(function () { return {}; });
+
+      if (response.ok) {
+        await loadMailTemplates(payload.key);
+        setMailStatus(successMessage, false);
+      } else if (response.status === 401) {
+        setMailStatus("Der Admin-Token ist falsch.", true);
+      } else if (body.error === "missing_placeholder") {
+        setMailStatus("Es fehlen Platzhalter: " + placeholderList(body.missing || []), true);
+      } else if (body.error === "templates_not_configured") {
+        setMailStatus("Die Tabelle für E-Mail-Vorlagen fehlt im Worker.", true);
+      } else {
+        setMailStatus("Die Vorlage konnte nicht gespeichert werden.", true);
+      }
+    } catch {
+      setMailStatus("Keine Verbindung zum Worker.", true);
+    } finally {
+      if (mailSave) mailSave.disabled = false;
+    }
+  }
+
   function render(testers) {
     lastTesters = testers;
     rows.replaceChildren();
@@ -428,6 +595,7 @@
       }
       setStatus("", false);
       render(body.testers || []);
+      await loadMailTemplates();
     } catch {
       setStatus("Keine Verbindung zum Worker.", true);
     }
@@ -438,6 +606,9 @@
   if (copyPlayButton) copyPlayButton.addEventListener("click", copyPlayList);
   if (markPlayButton) markPlayButton.addEventListener("click", markPlayList);
   if (csvButton) csvButton.addEventListener("click", downloadCsv);
+  if (mailKey) mailKey.addEventListener("change", showTemplate);
+  if (mailSave) mailSave.addEventListener("click", saveTemplate);
+  if (mailReset) mailReset.addEventListener("click", resetTemplate);
   tokenInput.addEventListener("keydown", function (event) {
     if (event.key === "Enter") load();
   });
@@ -456,6 +627,23 @@
     if (markPlayButton) markPlayButton.disabled = true;
     if (csvButton) csvButton.disabled = true;
     setPlayStatus("", false);
+    mailTemplates = [];
+    if (mailKey) {
+      mailKey.replaceChildren();
+      mailKey.disabled = true;
+    }
+    if (mailSubject) {
+      mailSubject.value = "";
+      mailSubject.disabled = true;
+    }
+    if (mailBody) {
+      mailBody.value = "";
+      mailBody.disabled = true;
+    }
+    if (mailHint) mailHint.textContent = "";
+    if (mailSave) mailSave.disabled = true;
+    if (mailReset) mailReset.disabled = true;
+    setMailStatus("", false);
     setStatus("Abgemeldet.", false);
   });
 
