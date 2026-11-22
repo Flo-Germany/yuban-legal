@@ -4,121 +4,130 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Yuban – Tester-Übersicht</title>
-<link rel="stylesheet" href="tester.css?v=20261122a">
-<script src="admin.js?v=20261122a" defer></script>
+<title>Yuban – Tester</title>
+<link rel="stylesheet" href="tester.css?v=20261122b">
+<script src="admin.js?v=20261122b" defer></script>
 </head>
 <body>
 <header class="site-head">
   <span class="brand">YUBAN</span>
-  <span class="badge">Tester-Übersicht</span>
+  <span class="badge">Tester-Admin</span>
 </header>
 
-<main>
-  <p class="kicker">ADMIN</p>
-  <h1>Wer möchte testen?</h1>
-  <p class="lead">
-    Anmeldungen aus dem geschlossenen Test. Einladen verschickt die E-Mail mit dem
-    Play-Opt-in-Link; Absagen schickt eine freundliche Absage. Die Play-Testerliste
-    lässt sich unten kopieren und als CSV sichern.
-  </p>
-
-  <div class="admin-toolbar">
-    <label class="field">
-      <span>Admin-Token</span>
-      <input id="admin-token" type="password" autocomplete="off"
-             placeholder="Token aus .admin-token">
-    </label>
-    <button id="load-button" class="button" type="button">Übersicht laden</button>
+<main class="admin">
+  <div class="admin-bar">
+    <input id="admin-token" type="password" autocomplete="off"
+           placeholder="Admin-Token" aria-label="Admin-Token">
+    <button id="load-button" class="button compact" type="button">Laden</button>
     <button id="clear-button" class="small-button" type="button">Abmelden</button>
   </div>
-
   <p id="admin-status" class="admin-status" role="status" aria-live="polite"></p>
-  <p id="summary" class="summary"></p>
 
-  <div class="table-wrap" id="table-wrap" hidden>
-    <table>
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Google</th>
-          <th>Kontakt</th>
-          <th>Status</th>
-          <th>Aktion</th>
-        </tr>
-      </thead>
-      <tbody id="tester-rows"></tbody>
-    </table>
-  </div>
-
-  <section class="card">
-    <h2>Play-Testerliste</h2>
-    <p class="muted">
-      Play Console hat keine API für Testerlisten. Kopiere hier <strong>alle</strong>
-      Google-Adressen und füge sie in der Play Console unter
-      <strong>Tester → E-Mail-Liste</strong> ein. Google ignoriert Adressen, die schon
-      eingetragen sind – doppeltes Einfügen schadet also nicht.
-    </p>
-    <div class="row-actions">
-      <button id="copy-play-button" class="button" type="button" disabled>
-        Play-Liste kopieren
-      </button>
-      <button id="csv-button" class="small-button" type="button" disabled>
-        CSV herunterladen
+  <section id="overview" hidden>
+    <div class="summary-row">
+      <div class="chips" id="summary"></div>
+      <button id="invite-open-button" class="small-button accent" type="button" hidden>
+        Alle offenen einladen
       </button>
     </div>
-    <p id="play-status" class="admin-status" role="status" aria-live="polite"></p>
-    <label class="field" id="play-preview-wrap" hidden>
-      <span>Adressen für die Play Console <em>(kommagetrennt, auch manuell kopierbar)</em></span>
-      <textarea id="play-preview" class="copy-box" rows="3" readonly></textarea>
-    </label>
-  </section>
 
-  <section class="card">
-    <h2>Umfrage senden</h2>
-    <p class="muted">
-      Schickt allen offenen und eingeladenen Testern eine E-Mail mit dem
-      Google-Forms-Link. Abgesagte werden übersprungen.
-    </p>
-    <label class="field">
-      <span>Google-Forms-Link</span>
-      <input id="survey-url" type="url" placeholder="https://forms.gle/...">
-    </label>
-    <button id="survey-button" class="button" type="button">
-      Umfrage an alle Tester senden
-    </button>
-    <p id="survey-status" class="admin-status" role="status" aria-live="polite"></p>
-    <p class="muted">
-      Formular erstellen:
-      <a href="https://forms.google.com" target="_blank" rel="noopener">forms.google.com</a>
-    </p>
-  </section>
-  <section class="card">
-    <h2>E-Mail-Texte</h2>
-    <p class="muted">
-      Betreff und Text der Test-Mails. Platzhalter in doppelten Klammern werden beim
-      Versand ersetzt; gespeicherte Fassungen gelten sofort für die nächste Mail.
-    </p>
-    <label class="field">
-      <span>Vorlage</span>
-      <select id="mail-key" disabled></select>
-    </label>
-    <label class="field">
-      <span>Betreff</span>
-      <input id="mail-subject" type="text" maxlength="200" autocomplete="off" disabled>
-    </label>
-    <label class="field">
-      <span>Text</span>
-      <textarea id="mail-body" class="copy-box" rows="12" disabled></textarea>
-      <small id="mail-hint"></small>
-    </label>
-    <div class="row-actions">
-      <button id="mail-save" class="button" type="button" disabled>Vorlage speichern</button>
-      <button id="mail-reset" class="small-button" type="button" disabled>
-        Standard wiederherstellen
-      </button>
+    <div class="progress-row">
+      <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+      <span class="muted" id="progress-label"></span>
     </div>
-    <p id="mail-status" class="admin-status" role="status" aria-live="polite"></p>
+
+    <section class="panel">
+      <h2>Automatik</h2>
+      <label class="switch">
+        <input id="auto-invite" type="checkbox">
+        <span>Neue Tester sofort einladen <em>kein Klick mehr nötig</em></span>
+      </label>
+      <div class="auto-grid">
+        <label class="field tight">
+          <span>Google-Forms-Link</span>
+          <input id="survey-url" type="url" placeholder="https://forms.gle/...">
+        </label>
+        <label class="field tight">
+          <span>Umfrage automatisch senden am</span>
+          <input id="survey-at" type="datetime-local">
+        </label>
+      </div>
+      <div class="row-actions">
+        <button id="settings-save" class="button compact" type="button">
+          Einstellungen speichern
+        </button>
+        <button id="survey-button" class="small-button" type="button">
+          Umfrage jetzt senden
+        </button>
+      </div>
+      <p id="auto-hint" class="admin-status" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Google</th>
+            <th>Kontakt</th>
+            <th>Status</th>
+            <th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody id="tester-rows"></tbody>
+      </table>
+    </div>
+
+    <details class="panel" id="play-panel">
+      <summary>
+        Play-Testerliste
+        <span id="play-count" class="pill">0 Adressen</span>
+      </summary>
+      <p class="muted">
+        Alle Adressen kopieren und in der Play Console unter
+        <strong>Tester → E-Mail-Liste</strong> einfügen. Bereits vorhandene
+        Adressen ignoriert Google, doppeltes Einfügen ist unschädlich.
+      </p>
+      <div class="row-actions">
+        <button id="copy-play-button" class="button compact" type="button">
+          Adressen kopieren
+        </button>
+        <button id="csv-button" class="small-button" type="button">CSV-Backup</button>
+      </div>
+      <p id="play-status" class="admin-status" role="status" aria-live="polite"></p>
+      <label class="field tight" id="play-preview-wrap" hidden>
+        <textarea id="play-preview" class="copy-box" rows="2" readonly></textarea>
+      </label>
+    </details>
+
+    <details class="panel" id="mail-panel">
+      <summary>E-Mail-Texte</summary>
+      <p class="muted">
+        Platzhalter in doppelten Klammern werden beim Versand ersetzt.
+      </p>
+      <label class="field tight">
+        <span>Vorlage</span>
+        <select id="mail-key" disabled></select>
+      </label>
+      <label class="field tight">
+        <span>Betreff</span>
+        <input id="mail-subject" type="text" maxlength="200" autocomplete="off" disabled>
+      </label>
+      <label class="field tight">
+        <span>Text</span>
+        <textarea id="mail-body" class="copy-box" rows="10" disabled></textarea>
+        <small id="mail-hint"></small>
+      </label>
+      <div class="row-actions">
+        <button id="mail-save" class="button compact" type="button" disabled>
+          Vorlage speichern
+        </button>
+        <button id="mail-reset" class="small-button" type="button" disabled>
+          Standard
+        </button>
+      </div>
+      <p id="mail-status" class="admin-status" role="status" aria-live="polite"></p>
+    </details>
   </section>
 </main>
 

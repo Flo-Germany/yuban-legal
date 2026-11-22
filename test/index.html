@@ -18,8 +18,32 @@
 
 <h1>Yuban – Geschlossener Test</h1>
 
-<main id="form-card">
-  <form id="tester-form" novalidate>
+<section id="fix-card" hidden>
+  <h1>Adresse korrigieren</h1>
+  <p>
+    Deine bisherige Adresse wurde von Google Play nicht akzeptiert. Trage hier die
+    Adresse ein, die in deinem Google-Konto unter „Konto“ steht. Danach bekommst du
+    den Opt-in-Link erneut.
+  </p>
+  <form id="fix-form" novalidate>
+    <p>
+      <label for="fix-google">E-Mail-Adresse deines Google-Kontos</label><br>
+      <input id="fix-google" type="email" autocomplete="email" required
+             placeholder="du@gmail.com">
+    </p>
+    <p>
+      <label for="fix-contact">E-Mail zum Kontaktieren (optional)</label><br>
+      <input id="fix-contact" type="email" autocomplete="email"
+             placeholder="andere@adresse.de">
+    </p>
+    <p>
+      <button id="fix-submit" type="submit">Adresse speichern</button>
+    </p>
+    <p id="fix-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<main id="form-card">  <form id="tester-form" novalidate>
     <p>
       <label>
         <input type="checkbox" id="consent">

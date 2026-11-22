@@ -7,6 +7,17 @@
 
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
   var REQUEST_TIMEOUT_MS = 20000;
+
+  var params = new URLSearchParams(window.location.search);
+  var fixId = params.get("fix");
+  var fixToken = params.get("t");
+  var fixCard = document.getElementById("fix-card");
+
+  if (fixId && fixToken && fixCard) {
+    initFix(fixId, fixToken);
+    return;
+  }
+
   var form = document.getElementById("tester-form");
   if (!form) return;
 
@@ -133,4 +144,84 @@
         }
       });
   });
+  function initFix(id, token) {
+    document.getElementById("form-card").hidden = true;
+    fixCard.hidden = false;
+
+    var fixForm = document.getElementById("fix-form");
+    var google = document.getElementById("fix-google");
+    var contact = document.getElementById("fix-contact");
+    var submit = document.getElementById("fix-submit");
+    var note = document.getElementById("fix-status");
+
+    function setFixStatus(message, isError) {
+      note.textContent = message;
+      note.classList.toggle("error", Boolean(isError));
+    }
+
+    fixForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var email = google.value.trim();
+      var contactValue = contact.value.trim();
+      if (!isEmail(email)) {
+        setFixStatus("Bitte gib eine gültige Google-E-Mail-Adresse ein.", true);
+        google.focus();
+        return;
+      }
+      if (contactValue && !isEmail(contactValue)) {
+        setFixStatus("Bitte prüfe die Kontaktadresse.", true);
+        contact.focus();
+        return;
+      }
+
+      submit.disabled = true;
+      setFixStatus("Wird gespeichert …", false);
+
+      fetch(API_BASE + "/tester-fix", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          id: id,
+          t: token,
+          googleEmail: email,
+          contactEmail: contactValue,
+        }),
+      })
+        .then(function (response) {
+          return response.json().then(function (body) {
+            return { status: response.status, body: body };
+          });
+        })
+        .then(function (result) {
+          if (result.status === 200) {
+            fixCard.replaceChildren();
+            var title = document.createElement("h1");
+            title.textContent = "Adresse gespeichert.";
+            var text = document.createElement("p");
+            text.textContent =
+              result.body && result.body.autoInvited
+                ? "Die Einladung mit dem Opt-in-Link ist unterwegs. Öffne sie auf deinem Android-Gerät mit genau dieser Adresse."
+                : "Die Adresse ist gespeichert. Du bekommst die Einladung, sobald der nächste Platz vergeben wird.";
+            fixCard.appendChild(title);
+            fixCard.appendChild(text);
+            return;
+          }
+          submit.disabled = false;
+          if (result.status === 403) {
+            setFixStatus(
+              "Dieser Link ist ungültig oder abgelaufen. Bitte antworte auf die letzte E-Mail.",
+              true,
+            );
+          } else if (result.status === 409) {
+            setFixStatus("Diese Adresse ist bereits für den Test angemeldet.", true);
+          } else {
+            setFixStatus("Das hat nicht geklappt. Bitte versuche es später erneut.", true);
+          }
+        })
+        .catch(function () {
+          submit.disabled = false;
+          setFixStatus("Keine Verbindung. Bitte prüfe dein Netz und versuche es erneut.", true);
+        });
+    });
+  }
 })();

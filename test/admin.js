@@ -1,27 +1,43 @@
 /*
- * Minimal admin overview for the closed test. The token is entered by the owner and kept
- * in sessionStorage; it is never part of the public page.
+ * Compact tester dashboard.
+ *
+ * The token stays in sessionStorage; nothing secret lives in this file.
+ * Automation first: new signups can be invited automatically, the closing
+ * survey can be scheduled, and the Play list is always copied in full.
  */
 (function () {
   "use strict";
 
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
   var TOKEN_KEY = "yuban_admin_token";
+  var PLAY_KEY = "yuban_play_copied";
+
   var tokenInput = document.getElementById("admin-token");
   var loadButton = document.getElementById("load-button");
   var clearButton = document.getElementById("clear-button");
   var status = document.getElementById("admin-status");
+  var overview = document.getElementById("overview");
   var summary = document.getElementById("summary");
-  var tableWrap = document.getElementById("table-wrap");
+  var progressBar = document.getElementById("progress-bar");
+  var progressLabel = document.getElementById("progress-label");
+  var inviteOpenButton = document.getElementById("invite-open-button");
   var rows = document.getElementById("tester-rows");
+  if (!tokenInput || !rows) return;
+
+  var autoInvite = document.getElementById("auto-invite");
   var surveyUrl = document.getElementById("survey-url");
+  var surveyAt = document.getElementById("survey-at");
+  var settingsSave = document.getElementById("settings-save");
   var surveyButton = document.getElementById("survey-button");
-  var surveyStatus = document.getElementById("survey-status");
+  var autoHint = document.getElementById("auto-hint");
+
+  var playCount = document.getElementById("play-count");
   var copyPlayButton = document.getElementById("copy-play-button");
   var csvButton = document.getElementById("csv-button");
   var playStatus = document.getElementById("play-status");
   var playPreview = document.getElementById("play-preview");
   var playPreviewWrap = document.getElementById("play-preview-wrap");
+
   var mailKey = document.getElementById("mail-key");
   var mailSubject = document.getElementById("mail-subject");
   var mailBody = document.getElementById("mail-body");
@@ -29,34 +45,35 @@
   var mailSave = document.getElementById("mail-save");
   var mailReset = document.getElementById("mail-reset");
   var mailStatus = document.getElementById("mail-status");
+
+  var testers = null;
+  var settings = null;
   var mailTemplates = [];
-  var lastTesters = null;
-  if (!tokenInput || !rows) return;
+  var busy = false;
 
   var saved = sessionStorage.getItem(TOKEN_KEY);
   if (saved) tokenInput.value = saved;
+
+  function token() {
+    return tokenInput.value.trim();
+  }
 
   function setStatus(message, isError) {
     status.textContent = message;
     status.classList.toggle("error", Boolean(isError));
   }
 
-  function setSurveyStatus(message, isError) {
-    if (!surveyStatus) return;
-    surveyStatus.textContent = message;
-    surveyStatus.classList.toggle("error", Boolean(isError));
+  function setText(node, message, isError) {
+    if (!node) return;
+    node.textContent = message;
+    node.classList.toggle("error", Boolean(isError));
   }
 
-  function setPlayStatus(message, isError) {
-    if (!playStatus) return;
-    playStatus.textContent = message;
-    playStatus.classList.toggle("error", Boolean(isError));
-  }
-
-  function setMailStatus(message, isError) {
-    if (!mailStatus) return;
-    mailStatus.textContent = message;
-    mailStatus.classList.toggle("error", Boolean(isError));
+  function element(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
   }
 
   function statusLabel(value) {
@@ -71,7 +88,17 @@
     return "status status-pending";
   }
 
-  function formatDate(value) {
+  function shortDate(value) {
+    if (!value) return "—";
+    return new Date(value).toLocaleString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function longDate(value) {
     if (!value) return "—";
     return new Date(value).toLocaleString("de-DE", {
       day: "2-digit",
@@ -82,116 +109,32 @@
     });
   }
 
-  function element(tag, className, text) {
-    var node = document.createElement(tag);
-    if (className) node.className = className;
-    if (text != null) node.textContent = text;
-    return node;
+  function toInputValue(ms) {
+    var date = new Date(ms);
+    function pad(value) {
+      return String(value).padStart(2, "0");
+    }
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      "T" +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes())
+    );
   }
 
-  async function callAction(id, action) {
-    var labels = { invite: "Einladen", decline: "Absagen", problem: "Adresse prüfen" };
-    var label = labels[action] || action;
-    if (!window.confirm(label + " wirklich senden?")) return;
-
-    try {
-      var response = await fetch(API_BASE + "/testers/" + action, {
-        method: "POST",
-        headers: {
-          authorization: "Bearer " + tokenInput.value.trim(),
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ id: id }),
-      });
-      var body = await response.json().catch(function () { return {}; });
-
-      if (response.ok) {
-        setStatus(label + " gesendet.", false);
-        await load();
-        return;
-      }
-      if (body.error === "opt_in_not_configured") {
-        setStatus("Der Play-Opt-in-Link ist im Worker noch nicht hinterlegt.", true);
-      } else if (body.error === "mail_not_configured") {
-        setStatus("Resend ist im Worker noch nicht eingerichtet.", true);
-      } else if (body.error === "already_invited") {
-        setStatus("Diese Person wurde bereits eingeladen.", true);
-      } else if (response.status === 401) {
-        setStatus("Der Admin-Token ist falsch.", true);
-      } else {
-        setStatus(label + " konnte nicht gesendet werden.", true);
-      }
-    } catch {
-      setStatus("Keine Verbindung zum Worker.", true);
-    }
+  function parseInputValue(value) {
+    if (!value) return null;
+    var parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : null;
   }
 
-  async function sendSurvey() {
-    var token = tokenInput.value.trim();
-    if (!token) {
-      setSurveyStatus("Bitte den Admin-Token eingeben.", true);
-      return;
-    }
-    if (!lastTesters) {
-      setSurveyStatus("Bitte zuerst die Übersicht laden.", true);
-      return;
-    }
-
-    var recipients = lastTesters.filter(function (tester) {
-      return tester.status !== "declined";
-    });
-    if (recipients.length === 0) {
-      setSurveyStatus("Keine offenen oder eingeladenen Tester.", true);
-      return;
-    }
-
-    var formUrl = surveyUrl ? surveyUrl.value.trim() : "";
-    if (!/^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)/i.test(formUrl)) {
-      setSurveyStatus(
-        "Bitte einen gültigen Google-Forms-Link einfügen (forms.gle oder docs.google.com/forms).",
-        true,
-      );
-      return;
-    }
-    if (!window.confirm("Umfrage an " + recipients.length + " Tester senden?")) return;
-
-    surveyButton.disabled = true;
-    setSurveyStatus("Wird gesendet …", false);
-
-    try {
-      var response = await fetch(API_BASE + "/testers/survey", {
-        method: "POST",
-        headers: {
-          authorization: "Bearer " + token,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ formUrl: formUrl }),
-      });
-      var body = await response.json().catch(function () { return {}; });
-
-      if (response.ok) {
-        var message = body.sent + " Mails gesendet.";
-        if (body.failed) message += " " + body.failed + " fehlgeschlagen.";
-        setSurveyStatus(message, body.failed > 0);
-      } else if (response.status === 401) {
-        setSurveyStatus("Der Admin-Token ist falsch.", true);
-      } else if (body.error === "mail_not_configured") {
-        setSurveyStatus("Resend ist im Worker noch nicht eingerichtet.", true);
-      } else if (body.error === "invalid_form_url") {
-        setSurveyStatus("Der Link ist keine gültige Google-Forms-URL.", true);
-      } else if (body.error === "too_many_recipients") {
-        setSurveyStatus("Zu viele Empfänger (max. " + body.limit + ").", true);
-      } else {
-        setSurveyStatus("Die Umfrage konnte nicht gesendet werden.", true);
-      }
-    } catch {
-      setSurveyStatus("Keine Verbindung zum Worker.", true);
-    } finally {
-      surveyButton.disabled = false;
-    }
-  }
-
-  function allEmails(testers) {
+  function playEmails() {
+    if (!testers) return [];
     return testers
       .filter(function (tester) {
         return tester.status !== "declined";
@@ -201,22 +144,297 @@
       });
   }
 
-  function renderPlayList() {
-    var testers = lastTesters || [];
-    var emails = allEmails(testers);
+  function copiedSet() {
+    try {
+      var raw = localStorage.getItem(PLAY_KEY);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function newSinceCopy() {
+    var copied = copiedSet();
+    return playEmails().filter(function (email) {
+      return !copied.has(email);
+    }).length;
+  }
+
+  function renderSummary() {
+    if (!testers) return;
+    var counts = { pending: 0, invited: 0, declined: 0 };
+    testers.forEach(function (tester) {
+      counts[tester.status] = (counts[tester.status] || 0) + 1;
+    });
+
+    summary.replaceChildren();
+    [
+      [testers.length + " Anmeldungen", ""],
+      [(counts.pending || 0) + " offen", "status-pending"],
+      [(counts.invited || 0) + " eingeladen", "status-invited"],
+      [(counts.declined || 0) + " abgesagt", "status-declined"],
+    ].forEach(function (entry) {
+      summary.appendChild(element("span", "chip " + entry[1], entry[0]));
+    });
+
+    var invited = counts.invited || 0;
+    var target = 12;
+    progressBar.style.width = Math.min(100, (invited / target) * 100) + "%";
+    progressLabel.textContent =
+      invited + " von " + target + " Testern eingeladen · " + target + " × 14 Tage für den Produktionszugang";
+
+    var open = (counts.pending || 0) > 0;
+    inviteOpenButton.hidden = !open;
+  }
+
+  function renderTable() {
+    rows.replaceChildren();
+    if (!testers || testers.length === 0) {
+      var empty = document.createElement("tr");
+      var cell = element("td", "muted", "Noch keine Anmeldungen.");
+      cell.colSpan = 5;
+      empty.appendChild(cell);
+      rows.appendChild(empty);
+      return;
+    }
+
+    testers.forEach(function (tester) {
+      var tr = document.createElement("tr");
+      tr.appendChild(element("td", "nowrap", shortDate(tester.created_at)));
+      tr.appendChild(element("td", "email", tester.google_email));
+      tr.appendChild(element("td", "email muted", tester.contact_email || "—"));
+      var statusCell = document.createElement("td");
+      statusCell.appendChild(
+        element("span", statusClass(tester.status), statusLabel(tester.status)),
+      );
+      tr.appendChild(statusCell);
+
+      var actions = element("div", "row-actions compact");
+      var invite = element("button", "small-button", "Einladen");
+      invite.type = "button";
+      invite.disabled = tester.status === "invited" || tester.status === "declined";
+      invite.addEventListener("click", function () {
+        callAction(tester.id, "invite");
+      });
+
+      var decline = element("button", "small-button danger", "Absagen");
+      decline.type = "button";
+      decline.disabled = tester.status === "declined";
+      decline.addEventListener("click", function () {
+        callAction(tester.id, "decline");
+      });
+
+      var problem = element("button", "small-button", "Adresse");
+      problem.type = "button";
+      problem.title = "Korrektur-Link an den Tester senden";
+      problem.addEventListener("click", function () {
+        callAction(tester.id, "problem");
+      });
+
+      actions.appendChild(invite);
+      actions.appendChild(decline);
+      actions.appendChild(problem);
+      var actionCell = document.createElement("td");
+      actionCell.appendChild(actions);
+      tr.appendChild(actionCell);
+      rows.appendChild(tr);
+    });
+  }
+
+  function renderPlay() {
+    var emails = playEmails();
+    var fresh = newSinceCopy();
+    playCount.textContent =
+      emails.length + (fresh > 0 ? " · " + fresh + " neu" : "") + " Adressen";
     if (playPreview) playPreview.value = emails.join(", ");
     if (playPreviewWrap) playPreviewWrap.hidden = emails.length === 0;
     if (copyPlayButton) copyPlayButton.disabled = emails.length === 0;
-    if (csvButton) csvButton.disabled = testers.length === 0;
+    if (csvButton) csvButton.disabled = (testers || []).length === 0;
+  }
+
+  function renderSettings() {
+    if (!settings) return;
+    autoInvite.checked = Boolean(settings.autoInvite);
+    surveyUrl.value = settings.surveyUrl || "";
+    surveyAt.value = settings.surveyAt ? toInputValue(settings.surveyAt) : "";
+
+    if (settings.surveySentAt) {
+      setText(autoHint, "Umfrage gesendet am " + longDate(settings.surveySentAt) + ".", false);
+    } else if (settings.surveyAt) {
+      setText(autoHint, "Umfrage geht automatisch am " + longDate(settings.surveyAt) + " raus.", false);
+    } else {
+      setText(autoHint, "", false);
+    }
+
+    autoInvite.disabled = false;
+    settingsSave.disabled = false;
+    surveyButton.disabled = false;
+  }
+
+  async function callAction(id, action) {
+    if (busy) return;
+    var labels = { invite: "Einladen", decline: "Absagen", problem: "Adresse" };
+    var label = labels[action] || action;
+    if (!window.confirm(label + " wirklich senden?")) return;
+
+    busy = true;
+    try {
+      var response = await fetch(API_BASE + "/testers/" + action, {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      var body = await response.json().catch(function () { return {}; });
+
+      if (response.ok) {
+        setStatus(label + ": Mail gesendet.", false);
+        await load();
+        return;
+      }
+      if (response.status === 401) {
+        setStatus("Der Admin-Token ist falsch.", true);
+      } else if (body.error === "already_invited") {
+        setStatus("Diese Person wurde bereits eingeladen.", true);
+      } else if (body.error === "opt_in_not_configured") {
+        setStatus("Der Play-Opt-in-Link fehlt im Worker.", true);
+      } else if (body.error === "mail_not_configured") {
+        setStatus("Resend ist im Worker nicht eingerichtet.", true);
+      } else {
+        setStatus(label + ": Mail konnte nicht gesendet werden.", true);
+      }
+    } catch {
+      setStatus("Keine Verbindung zum Worker.", true);
+    } finally {
+      busy = false;
+    }
+  }
+
+  async function inviteAllOpen() {
+    if (!testers || busy) return;
+    var open = testers.filter(function (tester) {
+      return tester.status === "pending";
+    });
+    if (open.length === 0) return;
+    if (!window.confirm(open.length + " offene Tester jetzt einladen?")) return;
+
+    busy = true;
+    inviteOpenButton.disabled = true;
+    var sent = 0;
+    var failed = 0;
+    for (var i = 0; i < open.length; i++) {
+      try {
+        var response = await fetch(API_BASE + "/testers/invite", {
+          method: "POST",
+          headers: {
+            authorization: "Bearer " + token(),
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ id: open[i].id }),
+        });
+        if (response.ok) sent++;
+        else failed++;
+      } catch {
+        failed++;
+      }
+    }
+    inviteOpenButton.disabled = false;
+    busy = false;
+    setStatus(sent + " eingeladen." + (failed ? " " + failed + " fehlgeschlagen." : ""), failed > 0);
+    await load();
+  }
+
+  async function saveSettings(extra) {
+    var payload = extra || {};
+    if (!extra) {
+      payload = {
+        surveyUrl: surveyUrl.value.trim(),
+        surveyAt: surveyAt.value ? new Date(parseInputValue(surveyAt.value)).toISOString() : 0,
+      };
+    }
+
+    try {
+      var response = await fetch(API_BASE + "/admin/settings", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      var body = await response.json().catch(function () { return {}; });
+      if (response.ok) {
+        settings = body;
+        renderSettings();
+        if (!extra) setText(autoHint, "Einstellungen gespeichert.", false);
+        return true;
+      }
+      if (response.status === 401) {
+        setText(autoHint, "Der Admin-Token ist falsch.", true);
+      } else if (body.error === "invalid_form_url") {
+        setText(autoHint, "Der Link ist keine gültige Google-Forms-URL.", true);
+      } else {
+        setText(autoHint, "Einstellungen konnten nicht gespeichert werden.", true);
+      }
+    } catch {
+      setText(autoHint, "Keine Verbindung zum Worker.", true);
+    }
+    return false;
+  }
+
+  async function sendSurveyNow() {
+    var formUrl = surveyUrl.value.trim();
+    if (!/^https:\/\/(docs\.google\.com\/forms\/|forms\.gle\/)/i.test(formUrl)) {
+      setText(autoHint, "Bitte einen gültigen Google-Forms-Link einfügen.", true);
+      return;
+    }
+    var recipients = (testers || []).filter(function (tester) {
+      return tester.status !== "declined";
+    });
+    if (recipients.length === 0) {
+      setText(autoHint, "Keine Tester für die Umfrage.", true);
+      return;
+    }
+    if (!window.confirm("Umfrage an " + recipients.length + " Tester senden?")) return;
+
+    surveyButton.disabled = true;
+    try {
+      var response = await fetch(API_BASE + "/testers/survey", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ formUrl: formUrl }),
+      });
+      var body = await response.json().catch(function () { return {}; });
+      if (response.ok) {
+        setText(
+          autoHint,
+          body.sent + " Mails gesendet." + (body.failed ? " " + body.failed + " fehlgeschlagen." : ""),
+          body.failed > 0,
+        );
+      } else if (body.error === "invalid_form_url") {
+        setText(autoHint, "Der Link ist keine gültige Google-Forms-URL.", true);
+      } else {
+        setText(autoHint, "Umfrage konnte nicht gesendet werden.", true);
+      }
+    } catch {
+      setText(autoHint, "Keine Verbindung zum Worker.", true);
+    } finally {
+      surveyButton.disabled = false;
+    }
   }
 
   async function copyPlayList() {
     var text = playPreview ? playPreview.value.trim() : "";
     if (!text) {
-      setPlayStatus("Es gibt noch keine Adressen zum Kopieren.", true);
+      setText(playStatus, "Keine Adressen vorhanden.", true);
       return;
     }
-    var count = text.split(",").length;
+    var emails = playEmails();
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);
@@ -224,14 +442,16 @@
         playPreview.select();
         document.execCommand("copy");
       }
-      setPlayStatus(
-        count + " Adressen kopiert. In der Play Console einfügen und speichern – " +
-          "bereits vorhandene Adressen ignoriert Google.",
+      localStorage.setItem(PLAY_KEY, JSON.stringify(emails));
+      renderPlay();
+      setText(
+        playStatus,
+        emails.length + " Adressen kopiert. In der Play Console einfügen und speichern.",
         false,
       );
     } catch {
       if (playPreview) playPreview.select();
-      setPlayStatus("Kopieren wurde blockiert. Der Text ist markiert – bitte mit Strg+C kopieren.", true);
+      setText(playStatus, "Kopieren blockiert – Text ist markiert, bitte Strg+C.", true);
     }
   }
 
@@ -242,16 +462,16 @@
   }
 
   function downloadCsv() {
-    if (!lastTesters || lastTesters.length === 0) return;
+    if (!testers || testers.length === 0) return;
     var lines = [["Datum", "Google", "Kontakt", "Status", "Eingeladen am"].join(";")];
-    lastTesters.forEach(function (tester) {
+    testers.forEach(function (tester) {
       lines.push(
         [
-          csvCell(formatDate(tester.created_at)),
+          csvCell(longDate(tester.created_at)),
           csvCell(tester.google_email),
           csvCell(tester.contact_email || ""),
           csvCell(statusLabel(tester.status)),
-          csvCell(tester.invited_at ? formatDate(tester.invited_at) : ""),
+          csvCell(tester.invited_at ? longDate(tester.invited_at) : ""),
         ].join(";"),
       );
     });
@@ -269,7 +489,7 @@
     setTimeout(function () {
       URL.revokeObjectURL(url);
     }, 2000);
-    setPlayStatus(lastTesters.length + " Zeilen als CSV heruntergeladen.", false);
+    setText(playStatus, testers.length + " Zeilen als CSV gespeichert.", false);
   }
 
   function currentTemplate() {
@@ -292,35 +512,29 @@
   function showTemplate() {
     var template = currentTemplate();
     if (!template) return;
-    if (mailSubject) mailSubject.value = template.subject;
-    if (mailBody) mailBody.value = template.body;
-    if (mailHint) {
-      mailHint.textContent = template.placeholders.length
-        ? "Pflicht-Platzhalter: " + placeholderList(template.placeholders)
-        : "Diese Vorlage braucht keine Platzhalter.";
-    }
-    if (mailReset) mailReset.disabled = !template.custom;
-    setMailStatus(template.custom ? "Eigene Fassung gespeichert." : "Standardtext aktiv.", false);
+    mailSubject.value = template.subject;
+    mailBody.value = template.body;
+    mailHint.textContent = template.placeholders.length
+      ? "Pflicht-Platzhalter: " + placeholderList(template.placeholders)
+      : "Diese Vorlage braucht keine Platzhalter.";
+    mailReset.disabled = !template.custom;
+    setText(mailStatus, template.custom ? "Eigene Fassung gespeichert." : "Standardtext aktiv.", false);
   }
 
   async function loadMailTemplates(selectKey) {
-    if (!mailKey || !mailSave) return;
-    var token = tokenInput.value.trim();
-    if (!token) return;
-
     try {
       var response = await fetch(API_BASE + "/admin/mails", {
-        headers: { authorization: "Bearer " + token },
+        headers: { authorization: "Bearer " + token() },
       });
       var body = await response.json().catch(function () { return {}; });
       if (!response.ok) {
-        if (response.status === 401) {
-          setMailStatus("Der Admin-Token ist falsch.", true);
-        } else if (body.error === "templates_not_configured") {
-          setMailStatus("Die Tabelle für E-Mail-Vorlagen fehlt im Worker.", true);
-        } else {
-          setMailStatus("Die E-Mail-Vorlagen konnten nicht geladen werden.", true);
-        }
+        setText(
+          mailStatus,
+          response.status === 401
+            ? "Der Admin-Token ist falsch."
+            : "Die E-Mail-Vorlagen konnten nicht geladen werden.",
+          true,
+        );
         return;
       }
 
@@ -329,232 +543,141 @@
       mailTemplates.forEach(function (template) {
         var option = document.createElement("option");
         option.value = template.key;
-        option.textContent = template.label + (template.custom ? " (eigene Fassung)" : "");
+        option.textContent = template.label + (template.custom ? " · eigene Fassung" : "");
         mailKey.appendChild(option);
       });
       if (selectKey) mailKey.value = selectKey;
-      else if (!mailKey.value && mailTemplates.length > 0) {
-        mailKey.value = mailTemplates[0].key;
-      }
+      else if (!mailKey.value && mailTemplates.length > 0) mailKey.value = mailTemplates[0].key;
+
       mailKey.disabled = false;
-      if (mailSubject) mailSubject.disabled = false;
-      if (mailBody) mailBody.disabled = false;
+      mailSubject.disabled = false;
+      mailBody.disabled = false;
       mailSave.disabled = false;
       showTemplate();
     } catch {
-      setMailStatus("Keine Verbindung zum Worker.", true);
+      setText(mailStatus, "Keine Verbindung zum Worker.", true);
     }
-  }
-
-  async function saveTemplate() {
-    var template = currentTemplate();
-    if (!template) {
-      setMailStatus("Bitte zuerst die Übersicht laden.", true);
-      return;
-    }
-    var subject = mailSubject ? mailSubject.value.trim() : "";
-    var bodyText = mailBody ? mailBody.value.trim() : "";
-    if (!subject || !bodyText) {
-      setMailStatus("Betreff und Text dürfen nicht leer sein.", true);
-      return;
-    }
-
-    var missing = template.placeholders.filter(function (name) {
-      return bodyText.indexOf("{{" + name + "}}") === -1;
-    });
-    if (missing.length > 0) {
-      setMailStatus("Es fehlen Platzhalter: " + placeholderList(missing), true);
-      return;
-    }
-
-    await postTemplate({
-      key: template.key,
-      subject: subject,
-      body: bodyText,
-    }, "Vorlage gespeichert. Sie gilt ab der nächsten Mail.");
-  }
-
-  async function resetTemplate() {
-    var template = currentTemplate();
-    if (!template) return;
-    if (!window.confirm("Standardtext für „" + template.label + "“ wiederherstellen?")) return;
-
-    await postTemplate(
-      { key: template.key, reset: true },
-      "Standardtext wiederhergestellt.",
-    );
   }
 
   async function postTemplate(payload, successMessage) {
-    var token = tokenInput.value.trim();
-    if (!token) {
-      setMailStatus("Bitte den Admin-Token eingeben.", true);
-      return;
-    }
-
-    if (mailSave) mailSave.disabled = true;
-    setMailStatus("Wird gespeichert …", false);
-
+    mailSave.disabled = true;
+    setText(mailStatus, "Wird gespeichert …", false);
     try {
       var response = await fetch(API_BASE + "/admin/mails", {
         method: "POST",
         headers: {
-          authorization: "Bearer " + token,
+          authorization: "Bearer " + token(),
           "content-type": "application/json",
         },
         body: JSON.stringify(payload),
       });
       var body = await response.json().catch(function () { return {}; });
-
       if (response.ok) {
         await loadMailTemplates(payload.key);
-        setMailStatus(successMessage, false);
-      } else if (response.status === 401) {
-        setMailStatus("Der Admin-Token ist falsch.", true);
+        setText(mailStatus, successMessage, false);
       } else if (body.error === "missing_placeholder") {
-        setMailStatus("Es fehlen Platzhalter: " + placeholderList(body.missing || []), true);
-      } else if (body.error === "templates_not_configured") {
-        setMailStatus("Die Tabelle für E-Mail-Vorlagen fehlt im Worker.", true);
+        setText(mailStatus, "Es fehlen Platzhalter: " + placeholderList(body.missing || []), true);
       } else {
-        setMailStatus("Die Vorlage konnte nicht gespeichert werden.", true);
+        setText(mailStatus, "Die Vorlage konnte nicht gespeichert werden.", true);
       }
     } catch {
-      setMailStatus("Keine Verbindung zum Worker.", true);
+      setText(mailStatus, "Keine Verbindung zum Worker.", true);
     } finally {
-      if (mailSave) mailSave.disabled = false;
+      mailSave.disabled = false;
     }
   }
 
-  function render(testers) {
-    lastTesters = testers;
-    rows.replaceChildren();
-    var counts = { pending: 0, invited: 0, declined: 0 };
-
-    testers.forEach(function (tester) {
-      counts[tester.status] = (counts[tester.status] || 0) + 1;
-      var tr = document.createElement("tr");
-
-      tr.appendChild(element("td", null, formatDate(tester.created_at)));
-      tr.appendChild(element("td", null, tester.google_email));
-      tr.appendChild(element("td", null, tester.contact_email || "—"));
-      var statusCell = document.createElement("td");
-      statusCell.appendChild(
-        element("span", statusClass(tester.status), statusLabel(tester.status)),
-      );
-      tr.appendChild(statusCell);
-
-      var actions = element("div", "row-actions");
-      var invite = element("button", "small-button", "Einladen");
-      invite.type = "button";
-      invite.disabled = tester.status === "invited";
-      invite.addEventListener("click", function () {
-        callAction(tester.id, "invite");
-      });
-
-      var decline = element("button", "small-button danger", "Absagen");
-      decline.type = "button";
-      decline.disabled = tester.status === "declined";
-      decline.addEventListener("click", function () {
-        callAction(tester.id, "decline");
-      });
-
-      var problem = element("button", "small-button", "Adresse prüfen");
-      problem.type = "button";
-      problem.addEventListener("click", function () {
-        callAction(tester.id, "problem");
-      });
-
-      actions.appendChild(invite);
-      actions.appendChild(decline);
-      actions.appendChild(problem);
-      var actionCell = document.createElement("td");
-      actionCell.appendChild(actions);
-      tr.appendChild(actionCell);
-      rows.appendChild(tr);
-    });
-
-    summary.textContent =
-      testers.length +
-      " Anmeldungen · " +
-      (counts.pending || 0) +
-      " offen · " +
-      (counts.invited || 0) +
-      " eingeladen · " +
-      (counts.declined || 0) +
-      " abgesagt";
-    tableWrap.hidden = testers.length === 0;
-    if (testers.length === 0) {
-      setStatus("Noch keine Anmeldungen.", false);
+  function saveTemplate() {
+    var template = currentTemplate();
+    if (!template) return;
+    var subject = mailSubject.value.trim();
+    var bodyText = mailBody.value.trim();
+    if (!subject || !bodyText) {
+      setText(mailStatus, "Betreff und Text dürfen nicht leer sein.", true);
+      return;
     }
-    renderPlayList();
+    var missing = template.placeholders.filter(function (name) {
+      return bodyText.indexOf("{{" + name + "}}") === -1;
+    });
+    if (missing.length > 0) {
+      setText(mailStatus, "Es fehlen Platzhalter: " + placeholderList(missing), true);
+      return;
+    }
+    postTemplate(
+      { key: template.key, subject: subject, body: bodyText },
+      "Vorlage gespeichert. Sie gilt ab der nächsten Mail.",
+    );
+  }
+
+  function resetTemplate() {
+    var template = currentTemplate();
+    if (!template) return;
+    if (!window.confirm("Standardtext für „" + template.label + "“ wiederherstellen?")) return;
+    postTemplate({ key: template.key, reset: true }, "Standardtext wiederhergestellt.");
   }
 
   async function load() {
-    var token = tokenInput.value.trim();
-    if (!token) {
+    if (!token()) {
       setStatus("Bitte den Admin-Token eingeben.", true);
       return;
     }
-    sessionStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token());
     setStatus("Wird geladen …", false);
 
     try {
-      var response = await fetch(API_BASE + "/testers", {
-        headers: { authorization: "Bearer " + token },
-      });
-      var body = await response.json().catch(function () { return {}; });
-      if (response.status === 401) {
+      var responses = await Promise.all([
+        fetch(API_BASE + "/testers", { headers: { authorization: "Bearer " + token() } }),
+        fetch(API_BASE + "/admin/settings", { headers: { authorization: "Bearer " + token() } }),
+      ]);
+      var testersResponse = responses[0];
+      var settingsResponse = responses[1];
+      var testersBody = await testersResponse.json().catch(function () { return {}; });
+      var settingsBody = await settingsResponse.json().catch(function () { return {}; });
+
+      if (testersResponse.status === 401 || settingsResponse.status === 401) {
         setStatus("Der Admin-Token ist falsch.", true);
-        tableWrap.hidden = true;
-        lastTesters = null;
-        renderPlayList();
+        overview.hidden = true;
         return;
       }
-      if (response.status === 503) {
-        setStatus("Der Admin-Bereich ist im Worker noch nicht eingerichtet.", true);
-        lastTesters = null;
-        renderPlayList();
-        return;
-      }
-      if (!response.ok) {
+      if (!testersResponse.ok) {
         setStatus("Die Übersicht konnte nicht geladen werden.", true);
-        lastTesters = null;
-        renderPlayList();
+        overview.hidden = true;
         return;
       }
+
+      testers = testersBody.testers || [];
+      settings = settingsBody;
+      overview.hidden = false;
       setStatus("", false);
-      render(body.testers || []);
+      renderSummary();
+      renderTable();
+      renderPlay();
+      renderSettings();
       await loadMailTemplates();
     } catch {
       setStatus("Keine Verbindung zum Worker.", true);
     }
   }
 
-  loadButton.addEventListener("click", load);
-  if (surveyButton) surveyButton.addEventListener("click", sendSurvey);
-  if (copyPlayButton) copyPlayButton.addEventListener("click", copyPlayList);
-  if (csvButton) csvButton.addEventListener("click", downloadCsv);
-  if (mailKey) mailKey.addEventListener("change", showTemplate);
-  if (mailSave) mailSave.addEventListener("click", saveTemplate);
-  if (mailReset) mailReset.addEventListener("click", resetTemplate);
-  tokenInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") load();
-  });
-  clearButton.addEventListener("click", function () {
+  function reset() {
     sessionStorage.removeItem(TOKEN_KEY);
     tokenInput.value = "";
+    testers = null;
+    settings = null;
+    mailTemplates = [];
+    overview.hidden = true;
     rows.replaceChildren();
-    summary.textContent = "";
-    tableWrap.hidden = true;
-    lastTesters = null;
+    summary.replaceChildren();
+    progressBar.style.width = "0%";
+    progressLabel.textContent = "";
     if (surveyUrl) surveyUrl.value = "";
-    setSurveyStatus("", false);
+    if (surveyAt) surveyAt.value = "";
+    if (autoInvite) autoInvite.checked = false;
     if (playPreview) playPreview.value = "";
     if (playPreviewWrap) playPreviewWrap.hidden = true;
-    if (copyPlayButton) copyPlayButton.disabled = true;
-    if (csvButton) csvButton.disabled = true;
-    setPlayStatus("", false);
-    mailTemplates = [];
+    setText(playStatus, "", false);
+    setText(autoHint, "", false);
+    setText(mailStatus, "", false);
     if (mailKey) {
       mailKey.replaceChildren();
       mailKey.disabled = true;
@@ -570,9 +693,28 @@
     if (mailHint) mailHint.textContent = "";
     if (mailSave) mailSave.disabled = true;
     if (mailReset) mailReset.disabled = true;
-    setMailStatus("", false);
     setStatus("Abgemeldet.", false);
+  }
+
+  loadButton.addEventListener("click", load);
+  tokenInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") load();
   });
+  clearButton.addEventListener("click", reset);
+
+  autoInvite.addEventListener("change", function () {
+    saveSettings({ autoInvite: autoInvite.checked });
+  });
+  settingsSave.addEventListener("click", function () {
+    saveSettings();
+  });
+  surveyButton.addEventListener("click", sendSurveyNow);
+  inviteOpenButton.addEventListener("click", inviteAllOpen);
+  copyPlayButton.addEventListener("click", copyPlayList);
+  csvButton.addEventListener("click", downloadCsv);
+  if (mailKey) mailKey.addEventListener("change", showTemplate);
+  if (mailSave) mailSave.addEventListener("click", saveTemplate);
+  if (mailReset) mailReset.addEventListener("click", resetTemplate);
 
   if (saved) load();
 })();
