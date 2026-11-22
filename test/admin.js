@@ -25,6 +25,9 @@
   var rows = document.getElementById("tester-rows");
   if (!tokenInput || !rows) return;
 
+  var toastNode = document.getElementById("toast");
+  var toastTimer = null;
+
   var autoInvite = document.getElementById("auto-invite");
   var surveyUrl = document.getElementById("survey-url");
   var surveyAt = document.getElementById("survey-at");
@@ -72,6 +75,17 @@
     if (!node) return;
     node.textContent = message;
     node.classList.toggle("error", Boolean(isError));
+  }
+
+  function toast(message, isError) {
+    if (!toastNode) return;
+    toastNode.textContent = message;
+    toastNode.classList.toggle("error", Boolean(isError));
+    toastNode.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastNode.classList.remove("show");
+    }, 3200);
   }
 
   function element(tag, className, text) {
@@ -263,6 +277,9 @@
       statusCell.appendChild(
         element("span", statusClass(tester.status), statusLabel(tester.status)),
       );
+      if (sentRecently[tester.id]) {
+        statusCell.appendChild(element("span", "pill ok", "gesendet"));
+      }
       tr.appendChild(statusCell);
 
       var actions = element("div", "row-actions compact");
@@ -270,21 +287,21 @@
       invite.type = "button";
       invite.disabled = tester.status === "invited" || tester.status === "declined";
       invite.addEventListener("click", function () {
-        callAction(tester.id, "invite");
+        callAction(tester.id, "invite", invite, actions, tester.google_email);
       });
 
       var decline = element("button", "small-button danger", "Absagen");
       decline.type = "button";
       decline.disabled = tester.status === "declined";
       decline.addEventListener("click", function () {
-        callAction(tester.id, "decline");
+        callAction(tester.id, "decline", decline, actions, tester.google_email);
       });
 
       var problem = element("button", "small-button", "Adresse");
       problem.type = "button";
       problem.title = "Korrektur-Link an den Tester senden";
       problem.addEventListener("click", function () {
-        callAction(tester.id, "problem");
+        callAction(tester.id, "problem", problem, actions, tester.google_email);
       });
 
       actions.appendChild(invite);
@@ -374,13 +391,22 @@
     surveyButton.disabled = false;
   }
 
-  async function callAction(id, action) {
+  var sentRecently = {};
+
+  async function callAction(id, action, button, container, email) {
     if (busy) return;
-    var labels = { invite: "Einladen", decline: "Absagen", problem: "Adresse" };
+    var labels = { invite: "Einladung", decline: "Absage", problem: "Korrektur-Link" };
     var label = labels[action] || action;
-    if (!window.confirm(label + " wirklich senden?")) return;
+    if (!window.confirm(label + " an " + email + " senden?")) return;
 
     busy = true;
+    var previousLabel = button ? button.textContent : "";
+    if (button) {
+      button.textContent = "Sendet…";
+      button.disabled = true;
+    }
+    if (container) container.classList.add("is-busy");
+
     try {
       var response = await fetch(API_BASE + "/testers/" + action, {
         method: "POST",
@@ -393,25 +419,30 @@
       var body = await response.json().catch(function () { return {}; });
 
       if (response.ok) {
-        setStatus(label + ": Mail gesendet.", false);
+        sentRecently[id] = true;
+        setStatus(label + " gesendet: " + email, false);
+        toast(label + " gesendet: " + email, false);
         await load();
         return;
       }
-      if (response.status === 401) {
-        setStatus("Der Admin-Token ist falsch.", true);
-      } else if (body.error === "already_invited") {
-        setStatus("Diese Person wurde bereits eingeladen.", true);
-      } else if (body.error === "opt_in_not_configured") {
-        setStatus("Der Play-Opt-in-Link fehlt im Worker.", true);
-      } else if (body.error === "mail_not_configured") {
-        setStatus("Resend ist im Worker nicht eingerichtet.", true);
-      } else {
-        setStatus(label + ": Mail konnte nicht gesendet werden.", true);
-      }
+
+      var message = label + " konnte nicht gesendet werden.";
+      if (response.status === 401) message = "Der Admin-Token ist falsch.";
+      else if (body.error === "already_invited") message = "Bereits eingeladen.";
+      else if (body.error === "opt_in_not_configured") message = "Der Play-Opt-in-Link fehlt im Worker.";
+      else if (body.error === "mail_not_configured") message = "Resend ist im Worker nicht eingerichtet.";
+      setStatus(message, true);
+      toast(message, true);
     } catch {
       setStatus("Keine Verbindung zum Worker.", true);
+      toast("Keine Verbindung zum Worker.", true);
     } finally {
       busy = false;
+      if (button) {
+        button.textContent = previousLabel;
+        button.disabled = false;
+      }
+      if (container) container.classList.remove("is-busy");
     }
   }
 
