@@ -11,6 +11,7 @@
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
   var TOKEN_KEY = "yuban_admin_token";
   var PLAY_KEY = "yuban_play_copied";
+  var PLAY_KNOWN = "yuban_play_known";
 
   var tokenInput = document.getElementById("admin-token");
   var loadButton = document.getElementById("load-button");
@@ -37,6 +38,10 @@
   var playStatus = document.getElementById("play-status");
   var playPreview = document.getElementById("play-preview");
   var playPreviewWrap = document.getElementById("play-preview-wrap");
+  var playPaste = document.getElementById("play-paste");
+  var playCompareButton = document.getElementById("play-compare-button");
+  var playMissingButton = document.getElementById("play-missing-button");
+  var playDiff = document.getElementById("play-diff");
 
   var mailKey = document.getElementById("mail-key");
   var mailSubject = document.getElementById("mail-subject");
@@ -160,6 +165,57 @@
     }).length;
   }
 
+  function knownEmails() {
+    try {
+      var raw = localStorage.getItem(PLAY_KNOWN);
+      return new Set(raw ? JSON.parse(raw) : []);
+    } catch {
+      return new Set();
+    }
+  }
+
+  function parseEmails(text) {
+    var matches = String(text || "").toLowerCase().match(/[^\s,;<>()]+@[^\s,;<>()]+/g) || [];
+    return matches.map(function (value) {
+      return value.replace(/[.,;:]+$/, "");
+    });
+  }
+
+  function comparePlayList() {
+    var emails = parseEmails(playPaste ? playPaste.value : "");
+    if (emails.length === 0) {
+      setText(playStatus, "Bitte zuerst die Play-Liste einfügen.", true);
+      return;
+    }
+    localStorage.setItem(PLAY_KNOWN, JSON.stringify(Array.from(new Set(emails))));
+    renderPlay();
+    setText(playStatus, emails.length + " Adressen aus Play übernommen.", false);
+  }
+
+  function missingInPlay() {
+    var known = knownEmails();
+    return playEmails().filter(function (email) {
+      return !known.has(email);
+    });
+  }
+
+  function downloadMissing() {
+    var missing = missingInPlay();
+    if (missing.length === 0) return;
+    var blob = new Blob([missing.join("\r\n") + "\r\n"], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "yuban-play-missing.csv";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 2000);
+    setText(playStatus, missing.length + " fehlende Adressen als CSV gespeichert.", false);
+  }
+
   function renderSummary() {
     if (!testers) return;
     var counts = { pending: 0, invited: 0, declined: 0 };
@@ -243,13 +299,60 @@
 
   function renderPlay() {
     var emails = playEmails();
-    var fresh = newSinceCopy();
-    playCount.textContent =
-      emails.length + (fresh > 0 ? " · " + fresh + " neu" : "") + " Adressen";
+    var known = knownEmails();
+    var knownList = Array.from(known);
+    var emailSet = new Set(emails);
+    var missing = emails.filter(function (email) {
+      return !known.has(email);
+    });
+    var extra = knownList.filter(function (email) {
+      return !emailSet.has(email);
+    });
+
+    if (known.size > 0) {
+      playCount.textContent = emails.length + " Adressen · " + missing.length + " fehlen";
+    } else {
+      var fresh = newSinceCopy();
+      playCount.textContent =
+        emails.length + (fresh > 0 ? " · " + fresh + " neu" : "") + " Adressen";
+    }
+
     if (playPreview) playPreview.value = emails.join(", ");
     if (playPreviewWrap) playPreviewWrap.hidden = emails.length === 0;
     if (copyPlayButton) copyPlayButton.disabled = emails.length === 0;
     if (csvButton) csvButton.disabled = (testers || []).length === 0;
+    if (playMissingButton) playMissingButton.disabled = missing.length === 0;
+
+    if (!playDiff) return;
+    playDiff.replaceChildren();
+    if (known.size === 0) {
+      playDiff.appendChild(
+        element(
+          "p",
+          "muted",
+          "Play-Liste einfügen und abgleichen – dann siehst du genau, wer fehlt.",
+        ),
+      );
+      return;
+    }
+    if (missing.length === 0) {
+      playDiff.appendChild(element("p", "diff-ok", "Alle Tester stehen in der Play-Liste."));
+    } else {
+      playDiff.appendChild(element("p", "diff-title", "Fehlen in Play (" + missing.length + ")"));
+      var missingList = element("div", "diff-list");
+      missing.forEach(function (email) {
+        missingList.appendChild(element("code", null, email));
+      });
+      playDiff.appendChild(missingList);
+    }
+    if (extra.length > 0) {
+      playDiff.appendChild(element("p", "diff-title", "Nur in Play (" + extra.length + ")"));
+      var extraList = element("div", "diff-list muted");
+      extra.forEach(function (email) {
+        extraList.appendChild(element("code", null, email));
+      });
+      playDiff.appendChild(extraList);
+    }
   }
 
   function renderSettings() {
@@ -657,6 +760,9 @@
       renderSummary();
       renderTable();
       renderPlay();
+      if (playPaste && !playPaste.value) {
+        playPaste.value = Array.from(knownEmails()).join(", ");
+      }
       renderSettings();
       await loadMailTemplates();
     } catch {
@@ -717,6 +823,8 @@
   inviteOpenButton.addEventListener("click", inviteAllOpen);
   copyPlayButton.addEventListener("click", copyPlayList);
   csvButton.addEventListener("click", downloadCsv);
+  if (playCompareButton) playCompareButton.addEventListener("click", comparePlayList);
+  if (playMissingButton) playMissingButton.addEventListener("click", downloadMissing);
   if (mailKey) mailKey.addEventListener("change", showTemplate);
   if (mailSave) mailSave.addEventListener("click", saveTemplate);
   if (mailReset) mailReset.addEventListener("click", resetTemplate);

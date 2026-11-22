@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Tester</title>
-<link rel="stylesheet" href="tester.css?v=20261122b">
-<script src="admin.js?v=20261122b" defer></script>
+<link rel="stylesheet" href="tester.css?v=20261122c">
+<script src="admin.js?v=20261122c" defer></script>
 </head>
 <body>
 <header class="site-head">
@@ -98,6 +98,19 @@
       <label class="field tight" id="play-preview-wrap" hidden>
         <textarea id="play-preview" class="copy-box" rows="2" readonly></textarea>
       </label>
+
+      <label class="field tight">
+        <span>Play-Liste einfügen <em>(zum Abgleichen)</em></span>
+        <textarea id="play-paste" class="copy-box" rows="3"
+                  placeholder="Adressen aus der Play Console, komma- oder zeilenweise"></textarea>
+      </label>
+      <div class="row-actions">
+        <button id="play-compare-button" class="small-button" type="button">Abgleichen</button>
+        <button id="play-missing-button" class="small-button accent" type="button" disabled>
+          Fehlende als CSV
+        </button>
+      </div>
+      <div id="play-diff" class="play-diff"></div>
     </details>
 
     <details class="panel" id="mail-panel">

@@ -661,6 +661,41 @@ td {
   font-size: 0.72rem;
 }
 
+.play-diff {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.play-diff p {
+  margin: 0.55rem 0 0.3rem;
+}
+
+.diff-title {
+  color: var(--muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.diff-ok {
+  color: #81c9ac;
+}
+
+.diff-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.diff-list code {
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+
 @media (max-width: 560px) {
   .admin-bar input {
     flex-basis: 8rem;
