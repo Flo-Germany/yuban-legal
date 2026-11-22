@@ -331,6 +331,11 @@
       if (sentRecently[tester.id]) {
         statusCell.appendChild(element("span", "pill ok", "gesendet"));
       }
+      if (tester.previous_email) {
+        var changed = element("span", "pill warn", "geändert");
+        changed.title = "vorher: " + tester.previous_email;
+        statusCell.appendChild(changed);
+      }
       tr.appendChild(statusCell);
 
       var actions = element("div", "row-actions compact");
@@ -667,7 +672,9 @@
 
   function downloadCsv() {
     if (!testers || testers.length === 0) return;
-    var lines = [["Datum", "Google", "Kontakt", "Status", "Eingeladen am"].join(";")];
+    var lines = [
+      ["Datum", "Google", "Kontakt", "Status", "Vorherige Adresse", "Geändert am", "Eingeladen am"].join(";"),
+    ];
     testers.forEach(function (tester) {
       lines.push(
         [
@@ -675,6 +682,8 @@
           csvCell(tester.google_email),
           csvCell(tester.contact_email || ""),
           csvCell(statusLabel(tester.status)),
+          csvCell(tester.previous_email || ""),
+          csvCell(tester.email_changed_at ? longDate(tester.email_changed_at) : ""),
           csvCell(tester.invited_at ? longDate(tester.invited_at) : ""),
         ].join(";"),
       );

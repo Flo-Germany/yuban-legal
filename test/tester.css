@@ -599,6 +599,11 @@ details.panel > summary + * {
   border-color: rgba(129, 201, 172, 0.4);
 }
 
+.pill.warn {
+  color: #e8c47a;
+  border-color: rgba(232, 196, 122, 0.4);
+}
+
 .row-actions.is-busy {
   opacity: 0.55;
 }
