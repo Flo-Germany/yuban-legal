@@ -433,8 +433,8 @@ tr:last-child td {
     flex-basis: 100%;
   }
 
-  th:nth-child(3),
-  td:nth-child(3) {
+  th:nth-child(1),
+  td:nth-child(1) {
     display: none;
   }
 }
@@ -683,6 +683,18 @@ td {
   padding: 0.45rem 0.5rem;
 }
 
+td {
+  padding: 0.35rem 0.5rem;
+}
+
+.status-cell {
+  white-space: nowrap;
+}
+
+.status-cell .pill {
+  margin-left: 0.3rem;
+}
+
 .nowrap {
   white-space: nowrap;
 }
@@ -691,13 +703,35 @@ td {
   word-break: break-all;
 }
 
+.email-cell {
+  line-height: 1.35;
+}
+
+.email-main {
+  display: block;
+  word-break: break-all;
+}
+
+.email-sub {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  word-break: break-all;
+}
+
 .row-actions.compact {
-  gap: 0.25rem;
+  flex-wrap: nowrap;
+  gap: 0.2rem;
 }
 
 .row-actions.compact .small-button {
-  padding: 0.2rem 0.45rem;
-  font-size: 0.72rem;
+  padding: 0.18rem 0.4rem;
+  font-size: 0.7rem;
+  white-space: nowrap;
+}
+
+td:last-child {
+  white-space: nowrap;
 }
 
 .play-diff {

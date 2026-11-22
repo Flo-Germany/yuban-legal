@@ -262,7 +262,7 @@
     if (!testers || testers.length === 0) {
       var empty = document.createElement("tr");
       var cell = element("td", "muted", "Noch keine Anmeldungen.");
-      cell.colSpan = 5;
+      cell.colSpan = 4;
       empty.appendChild(cell);
       rows.appendChild(empty);
       return;
@@ -271,9 +271,17 @@
     testers.forEach(function (tester) {
       var tr = document.createElement("tr");
       tr.appendChild(element("td", "nowrap", shortDate(tester.created_at)));
-      tr.appendChild(element("td", "email", tester.google_email));
-      tr.appendChild(element("td", "email muted", tester.contact_email || "—"));
+
+      var emailCell = document.createElement("td");
+      emailCell.className = "email-cell";
+      emailCell.appendChild(element("span", "email-main", tester.google_email));
+      if (tester.contact_email && tester.contact_email !== tester.google_email) {
+        emailCell.appendChild(element("span", "email-sub", tester.contact_email));
+      }
+      tr.appendChild(emailCell);
+
       var statusCell = document.createElement("td");
+      statusCell.className = "status-cell";
       statusCell.appendChild(
         element("span", statusClass(tester.status), statusLabel(tester.status)),
       );
@@ -297,7 +305,7 @@
         callAction(tester.id, "decline", decline, actions, tester.google_email);
       });
 
-      var problem = element("button", "small-button", "Adresse");
+      var problem = element("button", "small-button", "Link");
       problem.type = "button";
       problem.title = "Korrektur-Link an den Tester senden";
       problem.addEventListener("click", function () {
