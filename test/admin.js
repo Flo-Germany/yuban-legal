@@ -257,6 +257,49 @@
     inviteOpenButton.hidden = !open;
   }
 
+  function confirmInline(container, question, onConfirm) {
+    container.replaceChildren();
+    container.appendChild(element("span", "confirm-label", question));
+    var yes = element("button", "small-button danger", "Ja");
+    yes.type = "button";
+    yes.addEventListener("click", onConfirm);
+    var no = element("button", "small-button", "Nein");
+    no.type = "button";
+    no.addEventListener("click", function () {
+      renderTable();
+    });
+    container.appendChild(yes);
+    container.appendChild(no);
+  }
+
+  async function deleteTester(id, container) {
+    if (busy) return;
+    busy = true;
+    if (container) container.classList.add("is-busy");
+    try {
+      var response = await fetch(API_BASE + "/testers/delete", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer " + token(),
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ id: id }),
+      });
+      if (response.ok) {
+        toast("Eintrag gelöscht.", false);
+        await load();
+        return;
+      }
+      toast("Eintrag konnte nicht gelöscht werden.", true);
+    } catch {
+      toast("Keine Verbindung zum Worker.", true);
+    } finally {
+      busy = false;
+      if (container) container.classList.remove("is-busy");
+      renderTable();
+    }
+  }
+
   function renderTable() {
     rows.replaceChildren();
     if (!testers || testers.length === 0) {
@@ -302,19 +345,34 @@
       decline.type = "button";
       decline.disabled = tester.status === "declined";
       decline.addEventListener("click", function () {
-        callAction(tester.id, "decline", decline, actions, tester.google_email);
+        confirmInline(actions, "Absage?", function () {
+          callAction(tester.id, "decline", null, actions, tester.google_email);
+        });
       });
 
-      var problem = element("button", "small-button", "Link");
+      var problem = element("button", "small-button", tester.fix_sent_at ? "Link ✓" : "Link");
       problem.type = "button";
-      problem.title = "Korrektur-Link an den Tester senden";
+      problem.title = tester.fix_sent_at
+        ? "Korrektur-Link gesendet am " + longDate(tester.fix_sent_at)
+        : "Korrektur-Link an den Tester senden";
       problem.addEventListener("click", function () {
         callAction(tester.id, "problem", problem, actions, tester.google_email);
+      });
+
+      var remove = element("button", "small-button danger icon", "✕");
+      remove.type = "button";
+      remove.title = "Eintrag löschen";
+      remove.setAttribute("aria-label", "Eintrag löschen");
+      remove.addEventListener("click", function () {
+        confirmInline(actions, "Löschen?", function () {
+          deleteTester(tester.id, actions);
+        });
       });
 
       actions.appendChild(invite);
       actions.appendChild(decline);
       actions.appendChild(problem);
+      actions.appendChild(remove);
       var actionCell = document.createElement("td");
       actionCell.appendChild(actions);
       tr.appendChild(actionCell);
@@ -405,7 +463,6 @@
     if (busy) return;
     var labels = { invite: "Einladung", decline: "Absage", problem: "Korrektur-Link" };
     var label = labels[action] || action;
-    if (!window.confirm(label + " an " + email + " senden?")) return;
 
     busy = true;
     var previousLabel = button ? button.textContent : "";

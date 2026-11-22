@@ -603,6 +603,18 @@ details.panel > summary + * {
   opacity: 0.55;
 }
 
+.confirm-label {
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.small-button.icon {
+  min-width: 1.6rem;
+  padding: 0.18rem 0.4rem;
+  line-height: 1;
+}
+
 .toast {
   position: fixed;
   left: 50%;
