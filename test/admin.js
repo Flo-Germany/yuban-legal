@@ -18,7 +18,6 @@
   var surveyButton = document.getElementById("survey-button");
   var surveyStatus = document.getElementById("survey-status");
   var copyPlayButton = document.getElementById("copy-play-button");
-  var markPlayButton = document.getElementById("mark-play-button");
   var csvButton = document.getElementById("csv-button");
   var playStatus = document.getElementById("play-status");
   var playPreview = document.getElementById("play-preview");
@@ -91,7 +90,8 @@
   }
 
   async function callAction(id, action) {
-    var label = action === "invite" ? "Einladen" : "Absagen";
+    var labels = { invite: "Einladen", decline: "Absagen", problem: "Adresse prüfen" };
+    var label = labels[action] || action;
     if (!window.confirm(label + " wirklich senden?")) return;
 
     try {
@@ -191,10 +191,10 @@
     }
   }
 
-  function playPendingEmails(testers) {
+  function allEmails(testers) {
     return testers
       .filter(function (tester) {
-        return tester.status !== "declined" && !tester.play_added_at;
+        return tester.status !== "declined";
       })
       .map(function (tester) {
         return tester.google_email;
@@ -203,18 +203,17 @@
 
   function renderPlayList() {
     var testers = lastTesters || [];
-    var emails = playPendingEmails(testers);
+    var emails = allEmails(testers);
     if (playPreview) playPreview.value = emails.join(", ");
     if (playPreviewWrap) playPreviewWrap.hidden = emails.length === 0;
     if (copyPlayButton) copyPlayButton.disabled = emails.length === 0;
-    if (markPlayButton) markPlayButton.disabled = emails.length === 0;
     if (csvButton) csvButton.disabled = testers.length === 0;
   }
 
   async function copyPlayList() {
     var text = playPreview ? playPreview.value.trim() : "";
     if (!text) {
-      setPlayStatus("Keine neuen Adressen – alle Tester stehen schon in Play.", true);
+      setPlayStatus("Es gibt noch keine Adressen zum Kopieren.", true);
       return;
     }
     var count = text.split(",").length;
@@ -226,66 +225,14 @@
         document.execCommand("copy");
       }
       setPlayStatus(
-        count +
-          " Adressen kopiert. In der Play Console einfügen, speichern und danach " +
-          "„Als in Play eingetragen markieren“ klicken.",
+        count + " Adressen kopiert. In der Play Console einfügen und speichern – " +
+          "bereits vorhandene Adressen ignoriert Google.",
         false,
       );
     } catch {
       if (playPreview) playPreview.select();
       setPlayStatus("Kopieren wurde blockiert. Der Text ist markiert – bitte mit Strg+C kopieren.", true);
     }
-  }
-
-  async function setPlayAdded(ids, added) {
-    var token = tokenInput.value.trim();
-    if (!token) {
-      setPlayStatus("Bitte den Admin-Token eingeben.", true);
-      return;
-    }
-    if (!ids || ids.length === 0) return;
-
-    var question = added
-      ? ids.length + " Tester als in Play eingetragen markieren?"
-      : "Eintrag „in Play“ für diesen Tester zurücksetzen?";
-    if (!window.confirm(question)) return;
-
-    try {
-      var response = await fetch(API_BASE + "/testers/play-list", {
-        method: "POST",
-        headers: {
-          authorization: "Bearer " + token,
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ ids: ids, added: added }),
-      });
-      var body = await response.json().catch(function () { return {}; });
-      if (response.ok) {
-        await load();
-        setPlayStatus(
-          added ? ids.length + " als in Play eingetragen markiert." : "Eintrag zurückgesetzt.",
-          false,
-        );
-      } else if (response.status === 401) {
-        setPlayStatus("Der Admin-Token ist falsch.", true);
-      } else {
-        setPlayStatus("Der Play-Status konnte nicht gespeichert werden.", true);
-      }
-    } catch {
-      setPlayStatus("Keine Verbindung zum Worker.", true);
-    }
-  }
-
-  function markPlayList() {
-    var testers = lastTesters || [];
-    var ids = testers
-      .filter(function (tester) {
-        return tester.status !== "declined" && !tester.play_added_at;
-      })
-      .map(function (tester) {
-        return tester.id;
-      });
-    setPlayAdded(ids, true);
   }
 
   function csvCell(value) {
@@ -296,7 +243,7 @@
 
   function downloadCsv() {
     if (!lastTesters || lastTesters.length === 0) return;
-    var lines = [["Datum", "Google", "Kontakt", "Status", "In Play", "Eingeladen am"].join(";")];
+    var lines = [["Datum", "Google", "Kontakt", "Status", "Eingeladen am"].join(";")];
     lastTesters.forEach(function (tester) {
       lines.push(
         [
@@ -304,7 +251,6 @@
           csvCell(tester.google_email),
           csvCell(tester.contact_email || ""),
           csvCell(statusLabel(tester.status)),
-          csvCell(tester.play_added_at ? "eingetragen" : "neu"),
           csvCell(tester.invited_at ? formatDate(tester.invited_at) : ""),
         ].join(";"),
       );
@@ -483,11 +429,9 @@
     lastTesters = testers;
     rows.replaceChildren();
     var counts = { pending: 0, invited: 0, declined: 0 };
-    var inPlay = 0;
 
     testers.forEach(function (tester) {
       counts[tester.status] = (counts[tester.status] || 0) + 1;
-      if (tester.play_added_at) inPlay++;
       var tr = document.createElement("tr");
 
       tr.appendChild(element("td", null, formatDate(tester.created_at)));
@@ -498,15 +442,6 @@
         element("span", statusClass(tester.status), statusLabel(tester.status)),
       );
       tr.appendChild(statusCell);
-      var playCell = document.createElement("td");
-      playCell.appendChild(
-        element(
-          "span",
-          tester.play_added_at ? "status status-play" : "status status-new",
-          tester.play_added_at ? "eingetragen" : "neu",
-        ),
-      );
-      tr.appendChild(playCell);
 
       var actions = element("div", "row-actions");
       var invite = element("button", "small-button", "Einladen");
@@ -523,19 +458,15 @@
         callAction(tester.id, "decline");
       });
 
-      var playToggle = element(
-        "button",
-        "small-button",
-        tester.play_added_at ? "Play zurücksetzen" : "In Play eintragen",
-      );
-      playToggle.type = "button";
-      playToggle.addEventListener("click", function () {
-        setPlayAdded([tester.id], !tester.play_added_at);
+      var problem = element("button", "small-button", "Adresse prüfen");
+      problem.type = "button";
+      problem.addEventListener("click", function () {
+        callAction(tester.id, "problem");
       });
 
       actions.appendChild(invite);
       actions.appendChild(decline);
-      actions.appendChild(playToggle);
+      actions.appendChild(problem);
       var actionCell = document.createElement("td");
       actionCell.appendChild(actions);
       tr.appendChild(actionCell);
@@ -550,9 +481,7 @@
       (counts.invited || 0) +
       " eingeladen · " +
       (counts.declined || 0) +
-      " abgesagt · " +
-      inPlay +
-      " in Play";
+      " abgesagt";
     tableWrap.hidden = testers.length === 0;
     if (testers.length === 0) {
       setStatus("Noch keine Anmeldungen.", false);
@@ -604,7 +533,6 @@
   loadButton.addEventListener("click", load);
   if (surveyButton) surveyButton.addEventListener("click", sendSurvey);
   if (copyPlayButton) copyPlayButton.addEventListener("click", copyPlayList);
-  if (markPlayButton) markPlayButton.addEventListener("click", markPlayList);
   if (csvButton) csvButton.addEventListener("click", downloadCsv);
   if (mailKey) mailKey.addEventListener("change", showTemplate);
   if (mailSave) mailSave.addEventListener("click", saveTemplate);
@@ -624,7 +552,6 @@
     if (playPreview) playPreview.value = "";
     if (playPreviewWrap) playPreviewWrap.hidden = true;
     if (copyPlayButton) copyPlayButton.disabled = true;
-    if (markPlayButton) markPlayButton.disabled = true;
     if (csvButton) csvButton.disabled = true;
     setPlayStatus("", false);
     mailTemplates = [];

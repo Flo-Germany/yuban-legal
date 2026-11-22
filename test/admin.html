@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Tester-Übersicht</title>
-<link rel="stylesheet" href="tester.css?v=20261121c">
-<script src="admin.js?v=20261121c" defer></script>
+<link rel="stylesheet" href="tester.css?v=20261122a">
+<script src="admin.js?v=20261122a" defer></script>
 </head>
 <body>
 <header class="site-head">
@@ -44,7 +44,6 @@
           <th>Google</th>
           <th>Kontakt</th>
           <th>Status</th>
-          <th>In Play</th>
           <th>Aktion</th>
         </tr>
       </thead>
@@ -55,16 +54,14 @@
   <section class="card">
     <h2>Play-Testerliste</h2>
     <p class="muted">
-      Play Console hat keine API für Testerlisten. Kopiere die Adressen hier und
-      füge sie in der Play Console unter <strong>Tester → E-Mail-Liste</strong> ein.
-      Als eingetragen markierte Tester tauchen beim nächsten Kopieren nicht mehr auf.
+      Play Console hat keine API für Testerlisten. Kopiere hier <strong>alle</strong>
+      Google-Adressen und füge sie in der Play Console unter
+      <strong>Tester → E-Mail-Liste</strong> ein. Google ignoriert Adressen, die schon
+      eingetragen sind – doppeltes Einfügen schadet also nicht.
     </p>
     <div class="row-actions">
       <button id="copy-play-button" class="button" type="button" disabled>
         Play-Liste kopieren
-      </button>
-      <button id="mark-play-button" class="small-button" type="button" disabled>
-        Als in Play eingetragen markieren
       </button>
       <button id="csv-button" class="small-button" type="button" disabled>
         CSV herunterladen
