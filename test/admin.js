@@ -367,8 +367,13 @@
       var body = await response.json().catch(function () { return {}; });
       if (response.ok) {
         settings = body;
-        renderSettings();
-        if (!extra) setText(autoHint, "Einstellungen gespeichert.", false);
+        if (extra) {
+          // Toggling auto-invite must not overwrite unsaved survey fields.
+          autoInvite.checked = Boolean(body.autoInvite);
+        } else {
+          renderSettings();
+          setText(autoHint, "Einstellungen gespeichert.", false);
+        }
         return true;
       }
       if (response.status === 401) {
