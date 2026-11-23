@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Yuban – Closed test</title>
+<script>
+  window.__testerCaptchaToken = "";
+  window.onTesterCaptcha = function (token) {
+    window.__testerCaptchaToken = token;
+  };
+</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+<script src="tester.js" defer></script>
+</head>
+<body>
+
+<p class="lang-switch">
+  <a href="index.html" lang="de">Deutsch</a> &middot;
+  <a href="index-en.html" aria-current="page">English</a>
+</p>
+
+<h1>Yuban – Closed test</h1>
+
+<section id="fix-card" hidden>
+  <h1>Correct your address</h1>
+  <p>
+    Google Play did not accept your previous address. Enter the address that is
+    stored in your Google account under "Account". You will then receive the
+    opt-in link again.
+  </p>
+  <form id="fix-form" novalidate>
+    <p>
+      <label for="fix-google">Email address of your Google account</label><br>
+      <input id="fix-google" type="email" autocomplete="email" required
+             placeholder="you@gmail.com">
+    </p>
+    <p>
+      <label for="fix-contact">Contact email (optional)</label><br>
+      <input id="fix-contact" type="email" autocomplete="email"
+             placeholder="other@address.com">
+    </p>
+    <p>
+      <button id="fix-submit" type="submit">Save address</button>
+    </p>
+    <p id="fix-status" role="status" aria-live="polite"></p>
+  </form>
+</section>
+
+<main id="form-card">  <form id="tester-form" novalidate>
+    <p>
+      <label>
+        <input type="checkbox" id="consent">
+        I am interested in learning Chinese and would like to actively help make
+        the app better. I agree that my email address may be stored and used for
+        the purpose of running the closed test.
+        Details: <a href="../privacy-en.html">privacy policy</a>. I can withdraw
+        my consent at any time by email.
+        <strong>I also understand that this is a closed test and that I have to
+        expect bugs, unfinished features and short-notice changes.</strong>
+      </label>
+    </p>
+
+    <p>
+      <label for="google-email">Email address of your Google account</label><br>
+      <input id="google-email" type="email" autocomplete="email" required
+             placeholder="you@gmail.com">
+    </p>
+
+    <p>
+      <label for="contact-email">Contact email (optional)</label><br>
+      <input id="contact-email" type="email" autocomplete="email"
+             placeholder="other@address.com"><br>
+      <small>Leave empty if it is the same as your Google email.</small>
+    </p>
+
+    <div class="cf-turnstile"
+         data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
+         data-callback="onTesterCaptcha"
+         data-theme="auto"></div>
+
+    <p>
+      <button id="submit-button" type="submit">Sign up for the test</button>
+    </p>
+    <p id="form-status" role="status" aria-live="polite"></p>
+  </form>
+</main>
+
+<section id="success-card" hidden>
+  <h2>Signed up.</h2>
+  <p>
+    Your signup is saved. You will receive an email as soon as I add you to the
+    test — and also if it does not work out this time.
+  </p>
+  <p id="success-warning" hidden></p>
+</section>
+
+</body>
+</html>

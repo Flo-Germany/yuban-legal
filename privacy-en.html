@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy – Yuban</title>
+<meta name="description" content="Privacy policy of the Yuban Android app pursuant to Art. 13 GDPR.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main>
+
+<nav class="lang-switch" aria-label="Language">
+  <a href="privacy.html" lang="de">Deutsch</a>
+  <a href="privacy-en.html" class="active" aria-current="page">English</a>
+</nav>
+
+<h1>Privacy policy</h1>
+<p class="lead">Android app <strong>Yuban</strong>, <code>de.diebis.chineselearning</code></p>
+<p class="meta">Version of 21 November 2026</p>
+
+<h2>1. Controller</h2>
+<p>
+Controller within the meaning of Art. 4 No. 7 GDPR: Florian Reinhart, address and contact details as stated in the <a href="impressum-en.html#email">legal notice</a>. No data protection officer has been appointed.
+</p>
+
+<h2>2. Principles</h2>
+<p>
+(1) Only the data listed in sections 3 to 6 is processed. Advertising IDs are not collected; analytics, tracking, profiling and the sale of data do not take place.
+</p>
+<p>
+(2) The provider does not operate an application server for learning content. For transmission to the language model, for counting the quota and for sending tester and feedback emails, the provider uses processors (sections 4, 5 and 7).
+</p>
+
+<h2>3. Local processing</h2>
+<table>
+  <thead>
+    <tr><th>Data</th><th>Purpose</th><th>Storage location</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Conversation histories, vocabulary, word notes, suggestions</td>
+      <td>Learning features</td>
+      <td><code>lernchat.db</code></td>
+    </tr>
+    <tr>
+      <td>Settings (theme, text size, HSK level, display)</td>
+      <td>Presentation</td>
+      <td>App storage</td>
+    </tr>
+    <tr>
+      <td>Usage counters (answers per day or per month)</td>
+      <td>Quotas</td>
+      <td>App storage</td>
+    </tr>
+  </tbody>
+</table>
+<p>
+Legal basis: Art. 6(1)(b) and (f) GDPR. This content is not transmitted to the provider or to third parties.
+</p>
+
+<h2>4. AI features (Google Gemini)</h2>
+<p>
+(1) The following is transmitted: the message text, the HSK level, the active display settings, the word or grammar pattern concerned and, for premium speech output, the text to be synthesised.
+</p>
+<p>
+(2) Recipient: Google LLC or Google Ireland Limited, endpoint <code>generativelanguage.googleapis.com</code>. Legal basis: Art. 6(1)(b) GDPR; transmission only at the user's request.
+</p>
+<p>
+(3) The request is routed through a relay service operated by the provider at Cloudflare, Inc. or Cloudflare Germany GmbH (hereinafter "Cloudflare"). In doing so, Cloudflare processes the complete request, including the IP address and the message text, as a processor within the meaning of Art. 28 GDPR. A data processing agreement is in place with Cloudflare.
+</p>
+<p>
+(4) Transfers to third countries, in particular the USA, are based on Art. 45 GDPR (EU-US Data Privacy Framework) or Art. 46(2)(c) GDPR (standard contractual clauses).
+</p>
+<p>
+(5) The scope and duration of processing at Google are governed by the Google API terms and <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>; the provider has no influence on them. If the Gemini API is used within the free quota, Google may use the content to improve its products. In the paid tier, the content is not used for training.
+</p>
+<p>
+(6) Transmitting data within the meaning of Art. 9(1) GDPR as well as third-party data without authorisation is prohibited.
+</p>
+
+<h2>5. Device identifier and quota</h2>
+<p>
+(1) For server-side quota counting, the app derives a SHA-256 hash from the Android device identifier (<code>ANDROID_ID</code>) and the package name. This hash is transmitted to the relay service as the device identifier and stored there. The raw <code>ANDROID_ID</code> never leaves the device.
+</p>
+<p>
+(2) Only the following is stored: the device identifier, the plan (Free or Plus), the expiry date of a subscription and the number of answers in the current period. It cannot be linked to names, email addresses or locations.
+</p>
+<p>
+(3) The purpose is to enforce the quotas (Art. 6(1)(b) GDPR) and to prevent misuse (Art. 6(1)(f) GDPR).
+</p>
+<p>
+(4) The device identifier is not used for advertising or analytics purposes and is not transmitted to third parties other than the processors named in section 10. It is deleted once the purpose no longer applies; earlier on request at any time.
+</p>
+
+<h2>6. Payment processing</h2>
+<p>
+(1) The subscription is purchased and managed via Google Play Billing. The provider only receives the product identifier, the purchase status and the purchase token, but no payment data. The purchase token is stored at Cloudflare to verify and update the subscription and is deleted as soon as it is no longer needed for billing, at the latest after expiry of the statutory retention periods.
+</p>
+<p>
+(2) Google processes payment data as an independent controller; the legal basis for the purchase status held by the provider is Art. 6(1)(b) GDPR.
+</p>
+
+<h2>7. Closed test, feedback and email delivery</h2>
+<p>
+(1) For applications to the closed test, the provider processes the email address of the Google account, optionally a different contact email address, the consent, and the time and source of the application. The data is stored in a database at Cloudflare (D1). The purpose is to select, invite and communicate with testers. Legal basis: Art. 6(1)(a) GDPR. Consent may be withdrawn at any time by email via the <a href="impressum-en.html#email">legal notice</a>; the data is then deleted unless statutory retention obligations apply.
+</p>
+<p>
+(2) For confirmation, invitation and rejection emails, the provider uses the service Resend (Resend, Inc., USA) as a processor. The email address, the sender address and the content of the respective email are transmitted. A data processing agreement is in place with Resend; the transfer to the USA is based on Art. 45 GDPR (EU-US Data Privacy Framework) or Art. 46(2)(c) GDPR (standard contractual clauses).
+</p>
+<p>
+(3) When a user reports an AI answer or sends feedback, the message text and the optional note are sent to the provider by email. No email address of the user is required for this. The purpose is to review and improve the answers and to prevent misuse. Legal basis: Art. 6(1)(f) GDPR; insofar as the user voluntarily provides contact details, Art. 6(1)(a) GDPR. The report is stored in the provider's email inbox and deleted after review, at the latest after twelve months, unless statutory retention obligations apply.
+</p>
+<p>
+(4) The application and admin pages are provided as static pages via GitHub Pages (GitHub, Inc., USA). When they are accessed, GitHub processes technically necessary connection data (in particular IP address, time and user agent) as a processor. The pages and the contact form in the legal notice use Cloudflare Turnstile to prevent spam; Cloudflare processes the IP address and browser data for this purpose. Legal basis: Art. 6(1)(f) GDPR (security of the registration).
+</p>
+<p>
+(5) For the final survey, the provider uses Google Forms (Google Ireland Limited or Google LLC). The responses are stored in Google Sheets and used exclusively to evaluate the closed test. The survey is anonymous; an email address is only collected if the user provides it voluntarily. Legal basis: Art. 6(1)(f) GDPR (improving the app), and for voluntary information Art. 6(1)(a) GDPR. The responses are deleted after the evaluation, at the latest after twelve months.
+</p>
+
+<h2>8. Anki import and speech output</h2>
+<p>
+(1) The Anki import is carried out by read-only access to the local Anki database, exclusively at the user's request, without transmission to third parties.
+</p>
+<p>
+(2) Speech output in the free version uses the device's speech synthesis; section 4 applies to premium speech output.
+</p>
+
+<h2>9. Permissions</h2>
+<p>
+Only internet access and read-only access to the Anki database are requested. Permissions for location, camera, microphone, contacts, phone status and general file access are not requested.
+</p>
+
+<h2>10. Recipients</h2>
+<p>
+Recipients of personal data are Google to the extent described in sections 4, 6 and 7 (including Google Forms/Google Sheets), Cloudflare to the extent described in sections 4, 5 and 7, Resend to the extent described in section 7, and GitHub Pages to the extent described in section 7. The email provider of the inbox processes the reports and feedback emails sent to the provider. No disclosure takes place for advertising or market research purposes.
+</p>
+
+<h2>11. Storage period and deletion</h2>
+<p>
+(1) Data according to section 3 is stored until the user deletes it; deletion is possible by deleting the content, the app data or by uninstalling the app.
+</p>
+<p>
+(2) The device identifier according to section 5 is stored at the provider for as long as the quota is maintained. Deletion is possible at any time by email via the <a href="impressum-en.html#email">legal notice</a>.
+</p>
+<p>
+(3) Tester data according to section 7 is stored until the closed test ends and for no longer than three months thereafter, unless consent for further tests has been given or statutory retention obligations apply. It is deleted after consent is withdrawn.
+</p>
+<p>
+(4) Reports and feedback emails according to section 7 are deleted after review, at the latest after twelve months, unless statutory retention obligations apply.
+</p>
+<p>
+(5) Responses from the final survey according to section 7 are deleted after the evaluation, at the latest after twelve months.
+</p>
+<p>
+(6) The purchase token according to section 6 is deleted as soon as it is no longer needed for billing, at the latest after expiry of the statutory retention periods.
+</p>
+<p>
+(7) The terms of Google, Cloudflare, Resend and GitHub apply to the duration of processing at those companies.
+</p>
+
+<h2>12. Rights</h2>
+<p>
+(1) You have the rights under Art. 15 to 21 GDPR, in particular access, rectification, erasure, restriction, data portability and objection.
+</p>
+<p>
+(2) These rights must be asserted against the controller named in section 1; insofar as data is processed exclusively at Google, Cloudflare, Resend or GitHub, also against the respective provider.
+</p>
+<p>
+(3) You have the right to lodge a complaint with a supervisory authority under Art. 77 GDPR. Automated decision-making within the meaning of Art. 22 GDPR does not take place.
+</p>
+
+<h2>13. Minors and changes</h2>
+<p>
+(1) The app is not directed at persons under 16 years of age.
+</p>
+<p>
+(2) This policy is updated when processing changes; the published version is authoritative.
+</p>
+
+<nav class="nav">
+  <a href="index-en.html">Home</a>
+  <a href="terms-en.html">Terms of use</a>
+  <a href="widerruf-en.html">Right of withdrawal</a>
+  <a href="impressum-en.html">Legal notice</a>
+</nav>
+
+<footer>
+  Yuban &middot; <a href="impressum-en.html#email">Show email address</a>
+</footer>
+
+</main>
+</body>
+</html>

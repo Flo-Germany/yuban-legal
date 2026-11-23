@@ -796,3 +796,27 @@ td:last-child {
     align-items: flex-start;
   }
 }
+
+
+/* Language switch */
+.lang-switch {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.8rem;
+}
+
+.lang-switch a {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.lang-switch a.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}

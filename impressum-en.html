@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legal notice – Yuban</title>
+<meta name="description" content="Legal notice for the Yuban Android app pursuant to section 5 DDG.">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="email-gate.css">
+<script src="email-gate.js" defer></script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+<main>
+
+<nav class="lang-switch" aria-label="Language">
+  <a href="impressum.html" lang="de">Deutsch</a>
+  <a href="impressum-en.html" class="active" aria-current="page">English</a>
+</nav>
+
+<h1>Legal notice</h1>
+<p class="meta">Information pursuant to section 5 DDG (German Digital Services Act)</p>
+
+<h2>1. Service provider</h2>
+<p>
+Florian Reinhart<br>
+<!-- TODO: Postanschrift vor Veröffentlichung eintragen -->
+Address: to be added<br>
+</p>
+<div class="email-gate" id="email" data-email-gate>
+  <p class="email-gate__label">Email</p>
+  <p class="email-gate__hint">To protect against spam, please complete the CAPTCHA check.</p>
+  <div class="cf-turnstile"
+       data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
+       data-callback="onYubanCaptcha"
+       data-theme="auto"></div>
+  <div class="email-gate__result" data-email-result hidden aria-live="polite"></div>
+  <p class="email-gate__error" data-email-error hidden role="alert"></p>
+  <noscript><p class="email-gate__hint">Please enable JavaScript to display the email address.</p></noscript>
+</div>
+<p>
+Contact by email. No commercial register entry; no VAT identification number pursuant to section 27a of the German VAT Act (UStG).
+</p>
+
+<h2>2. Responsible pursuant to section 18(2) MStV</h2>
+<p>
+Florian Reinhart, address as stated in section 1.
+</p>
+
+<h2>3. Consumer dispute resolution</h2>
+<p>
+There is no obligation and no willingness to participate in dispute resolution proceedings before a consumer arbitration body (section 36 VSBG, German Consumer Dispute Resolution Act).
+</p>
+
+<h2>4. Liability and copyright</h2>
+<p>
+(1) Liability only for own content; no obligation to monitor third-party information (sections 8 to 10 DDG). AI output may be incorrect; section 8 of the <a href="terms-en.html">terms of use</a> applies.
+</p>
+<p>
+(2) Content is protected by copyright. Sources and licences of the datasets: see the app and <code>docs/THIRD_PARTY.md</code>.
+</p>
+
+<nav class="nav">
+  <a href="index-en.html">Home</a>
+  <a href="privacy-en.html">Privacy</a>
+  <a href="terms-en.html">Terms of use</a>
+  <a href="widerruf-en.html">Right of withdrawal</a>
+</nav>
+
+<footer>
+  Yuban &middot; <a href="#email">Show email address</a>
+</footer>
+
+</main>
+</body>
+</html>

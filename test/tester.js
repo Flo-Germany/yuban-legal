@@ -6,6 +6,8 @@
   "use strict";
 
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
+  var EN = document.documentElement.lang === "en";
+  function t(de, en) { return EN ? en : de; }
   var REQUEST_TIMEOUT_MS = 20000;
 
   var params = new URLSearchParams(window.location.search);
@@ -54,26 +56,26 @@
     var token = captchaToken();
 
     if (!consent.checked) {
-      setStatus("Bitte bestätige zuerst die Einwilligung.", true);
+      setStatus(t("Bitte bestätige zuerst die Einwilligung.", "Please confirm the consent first."), true);
       return;
     }
     if (!isEmail(email)) {
-      setStatus("Bitte gib eine gültige Google-E-Mail-Adresse ein.", true);
+      setStatus(t("Bitte gib eine gültige Google-E-Mail-Adresse ein.", "Please enter a valid Google email address."), true);
       googleEmail.focus();
       return;
     }
     if (contact && !isEmail(contact)) {
-      setStatus("Bitte gib eine gültige Kontaktadresse ein oder lass das Feld leer.", true);
+      setStatus(t("Bitte gib eine gültige Kontaktadresse ein oder lass das Feld leer.", "Please enter a valid contact address or leave the field empty."), true);
       contactEmail.focus();
       return;
     }
     if (!token) {
-      setStatus("Bitte schließe zuerst die CAPTCHA-Bestätigung ab.", true);
+      setStatus(t("Bitte schließe zuerst die CAPTCHA-Bestätigung ab.", "Please complete the CAPTCHA first."), true);
       return;
     }
 
     submit.disabled = true;
-    setStatus("Wird gesendet …", false);
+    setStatus(t("Wird gesendet …", "Sending …"), false);
 
     var controller = new AbortController();
     var timer = setTimeout(function () {
@@ -104,9 +106,11 @@
           successCard.hidden = false;
           if (result.body && result.body.mailSent === false) {
             successWarning.hidden = false;
-            successWarning.textContent =
+            successWarning.textContent = t(
               "Die Anmeldung ist gespeichert. Die Bestätigungsmail konnte noch nicht " +
-              "versendet werden — ich melde mich manuell.";
+              "versendet werden — ich melde mich manuell.",
+              "Your signup is saved. The confirmation email could not be sent yet — I will contact you manually.",
+            );
           }
           successCard.scrollIntoView({ behavior: "smooth", block: "center" });
           return;
@@ -116,18 +120,21 @@
         resetCaptcha();
 
         if (result.status === 409) {
-          setStatus("Diese Google-E-Mail-Adresse ist bereits angemeldet.", true);
+          setStatus(t("Diese Google-E-Mail-Adresse ist bereits angemeldet.", "This Google email address is already registered."), true);
         } else if (result.status === 400) {
-          setStatus("Bitte prüfe die Eingaben und versuche es erneut.", true);
+          setStatus(t("Bitte prüfe die Eingaben und versuche es erneut.", "Please check your input and try again."), true);
         } else if (result.status === 403) {
-          setStatus("Die CAPTCHA-Prüfung ist abgelaufen. Bitte bestätige sie erneut.", true);
+          setStatus(t("Die CAPTCHA-Prüfung ist abgelaufen. Bitte bestätige sie erneut.", "The CAPTCHA check expired. Please confirm it again."), true);
         } else if (result.status === 503) {
           setStatus(
-            "Die Anmeldung ist gerade nicht möglich. Bitte versuche es später erneut.",
+            t(
+              "Die Anmeldung ist gerade nicht möglich. Bitte versuche es später erneut.",
+              "Signup is not possible right now. Please try again later.",
+            ),
             true,
           );
         } else {
-          setStatus("Die Anmeldung konnte nicht gesendet werden. Bitte später erneut.", true);
+          setStatus(t("Die Anmeldung konnte nicht gesendet werden. Bitte später erneut.", "The signup could not be sent. Please try again later."), true);
         }
       })
       .catch(function (error) {
@@ -136,11 +143,14 @@
         resetCaptcha();
         if (error && error.name === "AbortError") {
           setStatus(
-            "Die Verbindung dauert zu lange. Bitte prüfe dein VPN/Netz und versuche es erneut.",
+            t(
+              "Die Verbindung dauert zu lange. Bitte prüfe dein VPN/Netz und versuche es erneut.",
+              "The connection is taking too long. Check your VPN/network and try again.",
+            ),
             true,
           );
         } else {
-          setStatus("Keine Verbindung. Bitte prüfe dein Netz und versuche es erneut.", true);
+          setStatus(t("Keine Verbindung. Bitte prüfe dein Netz und versuche es erneut.", "No connection. Check your network and try again."), true);
         }
       });
   });
@@ -164,18 +174,18 @@
       var email = google.value.trim();
       var contactValue = contact.value.trim();
       if (!isEmail(email)) {
-        setFixStatus("Bitte gib eine gültige Google-E-Mail-Adresse ein.", true);
+        setFixStatus(t("Bitte gib eine gültige Google-E-Mail-Adresse ein.", "Please enter a valid Google email address."), true);
         google.focus();
         return;
       }
       if (contactValue && !isEmail(contactValue)) {
-        setFixStatus("Bitte prüfe die Kontaktadresse.", true);
+        setFixStatus(t("Bitte prüfe die Kontaktadresse.", "Please check the contact address."), true);
         contact.focus();
         return;
       }
 
       submit.disabled = true;
-      setFixStatus("Wird gespeichert …", false);
+      setFixStatus(t("Wird gespeichert …", "Saving …"), false);
 
       fetch(API_BASE + "/tester-fix", {
         method: "POST",
@@ -196,12 +206,18 @@
           if (result.status === 200) {
             fixCard.replaceChildren();
             var title = document.createElement("h1");
-            title.textContent = "Adresse gespeichert.";
+            title.textContent = t("Adresse gespeichert.", "Address saved.");
             var text = document.createElement("p");
             text.textContent =
               result.body && result.body.autoInvited
-                ? "Die Einladung mit dem Opt-in-Link ist unterwegs. Öffne sie auf deinem Android-Gerät mit genau dieser Adresse."
-                : "Die Adresse ist gespeichert. Du bekommst die Einladung, sobald der nächste Platz vergeben wird.";
+                ? t(
+                    "Die Einladung mit dem Opt-in-Link ist unterwegs. Öffne sie auf deinem Android-Gerät mit genau dieser Adresse.",
+                    "The invitation with the opt-in link is on its way. Open it on your Android device with exactly this address.",
+                  )
+                : t(
+                    "Die Adresse ist gespeichert. Du bekommst die Einladung, sobald der nächste Platz vergeben wird.",
+                    "The address is saved. You will get the invitation as soon as the next slot is assigned.",
+                  );
             fixCard.appendChild(title);
             fixCard.appendChild(text);
             return;
@@ -209,13 +225,16 @@
           submit.disabled = false;
           if (result.status === 403) {
             setFixStatus(
-              "Dieser Link ist ungültig oder abgelaufen. Bitte antworte auf die letzte E-Mail.",
+              t(
+                "Dieser Link ist ungültig oder abgelaufen. Bitte antworte auf die letzte E-Mail.",
+                "This link is invalid or expired. Please reply to the last email.",
+              ),
               true,
             );
           } else if (result.status === 409) {
-            setFixStatus("Diese Adresse ist bereits für den Test angemeldet.", true);
+            setFixStatus(t("Diese Adresse ist bereits für den Test angemeldet.", "This address is already registered for the test."), true);
           } else {
-            setFixStatus("Das hat nicht geklappt. Bitte versuche es später erneut.", true);
+            setFixStatus(t("Das hat nicht geklappt. Bitte versuche es später erneut.", "That did not work. Please try again later."), true);
           }
         })
         .catch(function () {

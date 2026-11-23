@@ -8,6 +8,9 @@
   "use strict";
 
   var API_BASE = "https://yuban-api.binfloo.workers.dev";
+  var EN = document.documentElement.lang === "en";
+  function t(de, en) { return EN ? en : de; }
+
   var gate = document.querySelector("[data-email-gate]");
   if (!gate) return;
 
@@ -33,7 +36,7 @@
 
     var ready = document.createElement("p");
     ready.className = "email-gate__ready";
-    ready.textContent = "E-Mail-Adresse freigeschaltet:";
+    ready.textContent = t("E-Mail-Adresse freigeschaltet:", "Email address unlocked:");
 
     var actions = document.createElement("div");
     actions.className = "email-gate__actions";
@@ -46,18 +49,18 @@
     var copy = document.createElement("button");
     copy.type = "button";
     copy.className = "email-gate__copy";
-    copy.textContent = "Kopieren";
+    copy.textContent = t("Kopieren", "Copy");
     copy.addEventListener("click", function () {
       if (!navigator.clipboard || !navigator.clipboard.writeText) {
-        copy.textContent = "Bitte manuell kopieren";
+        copy.textContent = t("Bitte manuell kopieren", "Please copy manually");
         return;
       }
       navigator.clipboard.writeText(address).then(
         function () {
-          copy.textContent = "Kopiert";
+          copy.textContent = t("Kopiert", "Copied");
         },
         function () {
-          copy.textContent = "Bitte manuell kopieren";
+          copy.textContent = t("Bitte manuell kopieren", "Please copy manually");
         }
       );
     });
@@ -87,7 +90,7 @@
         showEmail(data.email);
       })
       .catch(function () {
-        showError("Bestätigung fehlgeschlagen. Bitte versuchen Sie es erneut.");
+        showError(t("Bestätigung fehlgeschlagen. Bitte versuchen Sie es erneut.", "Verification failed. Please try again."));
         if (window.turnstile) window.turnstile.reset();
       });
   };
