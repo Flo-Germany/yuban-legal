@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Closed test</title>
+<meta name="description" content="Join the closed test of Yuban, the Android app for learning Mandarin in conversation.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#111620">
+<link rel="stylesheet" href="tester.css">
 <script>
   window.__testerCaptchaToken = "";
   window.onTesterCaptcha = function (token) {
@@ -16,85 +20,142 @@
 </head>
 <body>
 
+<header class="site-head">
+  <a class="brand" href="../index-en.html">YUBAN</a>
+  <span class="badge">Closed test · Android</span>
+</header>
+
 <p class="lang-switch">
-  <a href="index.html" lang="de">Deutsch</a> &middot;
-  <a href="index-en.html" aria-current="page">English</a>
+  <a href="index.html" lang="de">Deutsch</a>
+  <a href="index-en.html" class="active" aria-current="page">English</a>
 </p>
 
-<h1>Yuban – Closed test</h1>
-
-<section id="fix-card" hidden>
-  <h1>Correct your address</h1>
-  <p>
-    Google Play did not accept your previous address. Enter the address that is
-    stored in your Google account under "Account". You will then receive the
-    opt-in link again.
+<main>
+  <p class="kicker">CLOSED TEST</p>
+  <h1>Learn Chinese in conversation.</h1>
+  <p class="lead">
+    Yuban teaches Mandarin through real dialogue: every word can be tapped for pinyin and
+    meaning, and a short trainer drills characters, tones and listening. I am looking for a
+    small group to use it for two weeks and tell me what breaks.
   </p>
-  <form id="fix-form" novalidate>
-    <p>
-      <label for="fix-google">Email address of your Google account</label><br>
-      <input id="fix-google" type="email" autocomplete="email" required
-             placeholder="you@gmail.com">
-    </p>
-    <p>
-      <label for="fix-contact">Contact email (optional)</label><br>
-      <input id="fix-contact" type="email" autocomplete="email"
-             placeholder="other@address.com">
-    </p>
-    <p>
-      <button id="fix-submit" type="submit">Save address</button>
-    </p>
-    <p id="fix-status" role="status" aria-live="polite"></p>
-  </form>
-</section>
 
-<main id="form-card">  <form id="tester-form" novalidate>
+  <ul class="facts">
+    <li>
+      <strong>14 days</strong>
+      <span>Please stay in the test</span>
+    </li>
+    <li>
+      <strong>10–12 min</strong>
+      <span>One vocabulary session</span>
+    </li>
+    <li>
+      <strong>Free</strong>
+      <span>No costs during the test</span>
+    </li>
+  </ul>
+
+  <div class="grid">
+    <div class="card">
+      <h2>What you get</h2>
+      <ul>
+        <li>Early access to Yuban on Android.</li>
+        <li>The full vocabulary trainer, including tones and listening.</li>
+        <li>A direct line to the developer — replies come from me, not a bot.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>What I ask of you</h2>
+      <ul>
+        <li>Use the app regularly for 14 days.</li>
+        <li>Keep it installed for the whole test.</li>
+        <li>One short survey at the end, and a message if something is off.</li>
+      </ul>
+    </div>
+  </div>
+
+  <section id="fix-card" class="card" hidden>
+    <h2>Correct your address</h2>
     <p>
-      <label>
-        <input type="checkbox" id="consent">
-        I am interested in learning Chinese and would like to actively help make
-        the app better. I agree that my email address may be stored and used for
-        the purpose of running the closed test.
-        Details: <a href="../privacy-en.html">privacy policy</a>. I can withdraw
-        my consent at any time by email.
-        <strong>I also understand that this is a closed test and that I have to
-        expect bugs, unfinished features and short-notice changes.</strong>
+      Google Play did not accept your previous address. Enter the address that is stored in
+      your Google account under “Account”. You will then receive the opt-in link again.
+    </p>
+    <form id="fix-form" novalidate>
+      <label class="field" for="fix-google">
+        <span>Email address of your Google account</span>
+        <input id="fix-google" type="email" autocomplete="email" required
+               placeholder="you@gmail.com">
       </label>
+      <label class="field" for="fix-contact">
+        <span>Contact email <em>optional</em></span>
+        <input id="fix-contact" type="email" autocomplete="email"
+               placeholder="other@address.com">
+      </label>
+      <button class="button" id="fix-submit" type="submit">Save address</button>
+      <p class="form-status" id="fix-status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="form-card" class="card form-card">
+    <h2>Join the closed test</h2>
+    <p class="muted">
+      One email address is enough. I add testers in small batches, so it may take a few days.
     </p>
 
+    <form id="tester-form" novalidate>
+      <label class="consent" for="consent">
+        <input type="checkbox" id="consent">
+        <span>
+          I am interested in learning Chinese and would like to help make the app better. I
+          agree that my email address may be stored and used for the purpose of running the
+          closed test. Details: <a href="../privacy-en.html">privacy policy</a>. I can withdraw
+          my consent at any time by email.
+          <strong>I also understand that this is a closed test and that I have to expect bugs,
+          unfinished features and short-notice changes.</strong>
+        </span>
+      </label>
+
+      <label class="field" for="google-email">
+        <span>Email address of your Google account</span>
+        <input id="google-email" type="email" autocomplete="email" required
+               placeholder="you@gmail.com">
+        <small>The address you use in the Play Store. The invite only works with it.</small>
+      </label>
+
+      <label class="field" for="contact-email">
+        <span>Contact email <em>optional</em></span>
+        <input id="contact-email" type="email" autocomplete="email"
+               placeholder="other@address.com">
+        <small>Leave empty if it is the same as your Google email.</small>
+      </label>
+
+      <div class="captcha-wrap cf-turnstile"
+           data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
+           data-callback="onTesterCaptcha"
+           data-theme="dark"></div>
+
+      <button class="button" id="submit-button" type="submit">Sign up for the test</button>
+      <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <section id="success-card" class="card success-card" hidden>
+    <h2>Signed up.</h2>
     <p>
-      <label for="google-email">Email address of your Google account</label><br>
-      <input id="google-email" type="email" autocomplete="email" required
-             placeholder="you@gmail.com">
+      Your signup is saved. You will receive an email as soon as I add you to the test — and
+      also if it does not work out this time.
     </p>
-
-    <p>
-      <label for="contact-email">Contact email (optional)</label><br>
-      <input id="contact-email" type="email" autocomplete="email"
-             placeholder="other@address.com"><br>
-      <small>Leave empty if it is the same as your Google email.</small>
-    </p>
-
-    <div class="cf-turnstile"
-         data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
-         data-callback="onTesterCaptcha"
-         data-theme="auto"></div>
-
-    <p>
-      <button id="submit-button" type="submit">Sign up for the test</button>
-    </p>
-    <p id="form-status" role="status" aria-live="polite"></p>
-  </form>
+    <p class="warning" id="success-warning" hidden></p>
+  </section>
 </main>
 
-<section id="success-card" hidden>
-  <h2>Signed up.</h2>
-  <p>
-    Your signup is saved. You will receive an email as soon as I add you to the
-    test — and also if it does not work out this time.
-  </p>
-  <p id="success-warning" hidden></p>
-</section>
+<footer class="site-foot">
+  <span>Yuban · Closed test</span>
+  <span>
+    <a href="../privacy-en.html">Privacy</a> ·
+    <a href="../impressum-en.html">Legal notice</a> ·
+    <a href="../index-en.html">Home</a>
+  </span>
+</footer>
 
 </body>
 </html>
