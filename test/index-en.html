@@ -22,12 +22,17 @@
 <body>
 
 <header class="site-head">
-  <a class="brand" href="../index-en.html">Yuban</a>
-  <span class="badge">Closed test</span>
-  <p class="lang-switch">
-    <a href="index.html" lang="de">Deutsch</a>
-    <a href="index-en.html" class="active" aria-current="page">English</a>
-  </p>
+  <div class="site-head__inner">
+    <a class="brand" href="../index-en.html">
+      <span class="brand__mark" aria-hidden="true">Y</span>
+      <span>Yuban</span>
+    </a>
+    <span class="badge">Closed test</span>
+    <nav class="lang-switch" aria-label="Language">
+      <a href="index.html" lang="de">Deutsch</a>
+      <a href="index-en.html" class="active" aria-current="page" lang="en">English</a>
+    </nav>
+  </div>
 </header>
 
 
@@ -132,12 +137,14 @@
 </main>
 
 <footer class="site-foot">
-  <span>Yuban · Closed test</span>
-  <span>
-    <a href="../privacy-en.html">Privacy</a> ·
-    <a href="../impressum-en.html">Legal notice</a> ·
-    <a href="../index-en.html">Home</a>
-  </span>
+  <div class="site-foot__inner">
+    <span>Yuban · Closed test</span>
+    <span>
+      <a href="../privacy-en.html">Privacy</a> ·
+      <a href="../impressum-en.html">Legal notice</a> ·
+      <a href="../index-en.html">Home</a>
+    </span>
+  </div>
 </footer>
 
 </body>
