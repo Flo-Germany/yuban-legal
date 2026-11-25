@@ -43,6 +43,10 @@ main,
   padding: 1.4rem 0 0.5rem;
 }
 
+.site-head .lang-switch {
+  margin: 0 0 0 auto;
+}
+
 .brand {
   color: var(--text);
   text-decoration: none;
