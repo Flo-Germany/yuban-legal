@@ -5,10 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Yuban – Geschlossener Test</title>
-<meta name="description" content="Mach beim geschlossenen Test von Yuban mit, der Android-App zum Chinesischlernen im Gespräch.">
+<meta name="description" content="Anmeldung zum geschlossenen Test der Android-Anwendung Yuban.">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
-<meta name="theme-color" content="#111620">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121316" media="(prefers-color-scheme: dark)">
 <link rel="stylesheet" href="tester.css">
+<link rel="stylesheet" href="tester-formal.css">
 <script>
   window.__testerCaptchaToken = "";
   window.onTesterCaptcha = function (token) {
@@ -21,52 +23,51 @@
 <body>
 
 <header class="site-head">
-  <a class="brand" href="../index.html">YUBAN</a>
-  <span class="badge">Geschlossener Test · Android</span>
+  <a class="brand" href="../index.html">Yuban</a>
+  <span class="badge">Geschlossener Test</span>
+  <p class="lang-switch">
+    <a href="index.html" class="active" aria-current="page">Deutsch</a>
+    <a href="index-en.html" lang="en">English</a>
+  </p>
 </header>
 
-<p class="lang-switch">
-  <a href="index.html" class="active" aria-current="page">Deutsch</a>
-  <a href="index-en.html" lang="en">English</a>
-</p>
 
 <main>
-  <p class="kicker">GESCHLOSSENER TEST</p>
-  <h1>Chinesisch lernen im Gespräch.</h1>
+  <h1>Geschlossener Test</h1>
   <p class="lead">
-    Yuban bringt dir Mandarin in echten Gesprächen bei: Jedes Wort lässt sich für Pinyin und
-    Bedeutung antippen, ein kurzer Trainer übt Zeichen, Töne und Hörverstehen. Ich suche eine
-    kleine Gruppe, die die App testet.
+    Yuban ist eine Android-Anwendung zum Chinesischlernen im Gespräch. Für den geschlossenen
+    Test wird eine kleine Gruppe gesucht, die die Anwendung über einen Zeitraum von 14 Tagen
+    begleitet.
   </p>
 
   <ul class="facts">
     <li>
       <strong>14 Tage</strong>
-      <span>Bitte bleib im Test</span>
+      <span>Testzeitraum</span>
     </li>
     <li>
-      <strong>10–12 Min.</strong>
-      <span>Eine Vokabelrunde</span>
+      <strong>10–12 Minuten</strong>
+      <span>pro Vokabeleinheit</span>
     </li>
     <li>
-      <strong>Kostenlos</strong>
-      <span>Keine Kosten im Test</span>
+      <strong>Kostenfrei</strong>
+      <span>während des Tests</span>
     </li>
   </ul>
 
   <div class="grid">
     <div class="card">
-      <h2>Das bekommst du</h2>
+      <h2>Leistungen im Test</h2>
       <ul>
-        <li>Frühen Zugang zu Yuban auf Android.</li>
-        <li>Den vollen Vokabeltrainer mit Tönen und Hörverstehen.</li>
-        <li>Direkten Draht zum Entwickler — Antworten kommen von mir, nicht von einem Bot.</li>
+        <li>Frühzeitiger Zugang zu Yuban auf Android.</li>
+        <li>Der vollständige Vokabeltrainer einschließlich Ton- und Hörübungen.</li>
+        <li>Direkter Kontakt zum Entwickler.</li>
       </ul>
     </div>
     <div class="card">
-      <h2>Das brauche ich von dir</h2>
+      <h2>Voraussetzung</h2>
       <ul>
-        <li>Lass die App installiert, bis der Test vorbei ist.</li>
+        <li>Die Anwendung bleibt bis zum Ende des Testzeitraums installiert.</li>
       </ul>
     </div>
   </div>
@@ -74,20 +75,20 @@
   <section id="fix-card" class="card" hidden>
     <h2>Adresse korrigieren</h2>
     <p>
-      Deine bisherige Adresse wurde von Google Play nicht akzeptiert. Trage hier die Adresse
-      ein, die in deinem Google-Konto unter „Konto“ steht. Danach bekommst du den Opt-in-Link
-      erneut.
+      Die bisherige Adresse wurde von Google Play nicht angenommen. Bitte tragen Sie die
+      Adresse ein, die in Ihrem Google-Konto hinterlegt ist. Anschließend wird der
+      Einladungslink erneut versendet.
     </p>
     <form id="fix-form" novalidate>
       <label class="field" for="fix-google">
-        <span>E-Mail-Adresse deines Google-Kontos</span>
+        <span>E-Mail-Adresse des Google-Kontos</span>
         <input id="fix-google" type="email" autocomplete="email" required
-               placeholder="du@gmail.com">
+               placeholder="name@gmail.com">
       </label>
       <label class="field" for="fix-contact">
-        <span>E-Mail zum Kontaktieren <em>optional</em></span>
+        <span>Kontaktadresse <em>optional</em></span>
         <input id="fix-contact" type="email" autocomplete="email"
-               placeholder="andere@adresse.de">
+               placeholder="name@beispiel.de">
       </label>
       <button class="button" id="fix-submit" type="submit">Adresse speichern</button>
       <p class="form-status" id="fix-status" role="status" aria-live="polite"></p>
@@ -95,56 +96,54 @@
   </section>
 
   <section id="form-card" class="card form-card">
-    <h2>Mitmachen</h2>
+    <h2>Anmeldung</h2>
     <p class="muted">
-      Eine E-Mail-Adresse genügt. Ich füge Tester in kleinen Gruppen hinzu, es kann also ein
-      paar Tage dauern.
+      Es genügt eine E-Mail-Adresse. Die Aufnahme erfolgt in kleinen Gruppen und kann einige
+      Tage dauern.
     </p>
 
     <form id="tester-form" novalidate>
       <label class="consent" for="consent">
         <input type="checkbox" id="consent">
         <span>
-          Ich interessiere mich für Chinesischlernen und möchte aktiv dazu beitragen, die App
-          besser zu machen. Ich stimme zu, dass meine E-Mail-Adresse zum Zweck der Durchführung
-          des geschlossenen Tests gespeichert und verwendet wird. Details:
-          <a href="../privacy.html">Datenschutzerklärung</a>. Ich kann die Einwilligung
-          jederzeit per E-Mail widerrufen.
-          <strong>Ich verstehe außerdem, dass es sich um einen geschlossenen Test handelt und
-          dass ich mit Fehlern, unfertigen Funktionen und kurzfristigen Änderungen rechnen
-          muss.</strong>
+          Ich stimme zu, dass meine E-Mail-Adresse zum Zweck der Durchführung des geschlossenen
+          Tests gespeichert und verwendet wird. Einzelheiten enthält die
+          <a href="../privacy.html">Datenschutzerklärung</a>. Die Einwilligung kann jederzeit
+          per E-Mail widerrufen werden. Mir ist bekannt, dass es sich um einen geschlossenen
+          Test handelt und dass Fehler, unfertige Funktionen und kurzfristige Änderungen
+          möglich sind.
         </span>
       </label>
 
       <label class="field" for="google-email">
-        <span>E-Mail-Adresse deines Google-Kontos</span>
+        <span>E-Mail-Adresse des Google-Kontos</span>
         <input id="google-email" type="email" autocomplete="email" required
-               placeholder="du@gmail.com">
-        <small>Die Adresse aus dem Play Store. Nur damit funktioniert die Einladung.</small>
+               placeholder="name@gmail.com">
+        <small>Die Adresse, die im Play Store verwendet wird. Die Einladung ist nur damit gültig.</small>
       </label>
 
       <label class="field" for="contact-email">
-        <span>E-Mail zum Kontaktieren <em>optional</em></span>
+        <span>Kontaktadresse <em>optional</em></span>
         <input id="contact-email" type="email" autocomplete="email"
-               placeholder="andere@adresse.de">
-        <small>Leer lassen, wenn die Adresse mit deiner Google-E-Mail übereinstimmt.</small>
+               placeholder="name@beispiel.de">
+        <small>Freilassen, sofern die Adresse mit der des Google-Kontos übereinstimmt.</small>
       </label>
 
       <div class="captcha-wrap cf-turnstile"
            data-sitekey="0x4AAAAAAGKLBvOa-tHIM7UO"
            data-callback="onTesterCaptcha"
-           data-theme="dark"></div>
+           data-theme="auto"></div>
 
-      <button class="button" id="submit-button" type="submit">Für den Test anmelden</button>
+      <button class="button" id="submit-button" type="submit">Anmeldung absenden</button>
       <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
     </form>
   </section>
 
   <section id="success-card" class="card success-card" hidden>
-    <h2>Angemeldet.</h2>
+    <h2>Anmeldung gespeichert</h2>
     <p>
-      Deine Anmeldung ist gespeichert. Du bekommst eine E-Mail, sobald ich dich zum Test
-      hinzufüge — und auch, falls es diesmal nicht klappt.
+      Die Anmeldung ist gespeichert. Eine E-Mail folgt, sobald über die Aufnahme in den Test
+      entschieden wurde – auch im Fall einer Absage.
     </p>
     <p class="warning" id="success-warning" hidden></p>
   </section>
