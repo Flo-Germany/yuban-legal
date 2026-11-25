@@ -3,18 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#111318" media="(prefers-color-scheme: dark)">
+
 <title>Nutzungsbedingungen – Yuban</title>
 <meta name="description" content="Nutzungs- und Abonnementsbedingungen der Android-App Yuban.">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main>
+<a class="skip-link" href="#content">Zum Inhalt springen</a>
+<header class="site-header">
+  <div class="site-header__inner">
+    <a class="brand" href="index.html">
+      <span class="brand__mark" aria-hidden="true">Y</span>
+      <span class="brand__text">
+        <span class="brand__name">Yuban</span>
+        <span class="brand__tag">Chinesisch im Gespräch</span>
+      </span>
+    </a>
+    <nav class="lang-switch" aria-label="Sprache">
+      <a href="index.html" class="active" aria-current="page" lang="de">Deutsch</a>
+      <a href="index-en.html" lang="en">English</a>
+    </nav>
+    <nav class="site-nav" aria-label="Hauptnavigation">
+        <a href="index.html">Start</a>
+        <a href="privacy.html">Datenschutz</a>
+        <a href="terms.html" aria-current="page">AGB</a>
+        <a href="widerruf.html">Widerruf</a>
+        <a href="impressum.html">Impressum</a>
+    </nav>
+  </div>
+</header>
 
-<nav class="lang-switch" aria-label="Sprache">
-  <a href="terms.html" class="active" aria-current="page">Deutsch</a>
-  <a href="terms-en.html" lang="en">English</a>
-</nav>
-
+<main id="content">
 <h1>Nutzungsbedingungen</h1>
 <p class="lead">Android-App <strong>Yuban</strong></p>
 <p class="meta">Fassung vom 17. November 2026</p>
@@ -132,18 +154,19 @@
 <p>
 (2) Unwirksamkeit einzelner Bestimmungen lässt die Wirksamkeit der übrigen unberührt; es gilt die gesetzliche Regelung.
 </p>
-
-<nav class="nav">
-  <a href="index.html">Start</a>
-  <a href="privacy.html">Datenschutz</a>
-  <a href="widerruf.html">Widerrufsrecht</a>
-  <a href="impressum.html">Impressum</a>
-</nav>
-
-<footer>
-  Yuban &middot; <a href="impressum.html#email">E-Mail anzeigen</a>
-</footer>
-
 </main>
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <nav aria-label="Rechtliches">
+      <a href="index.html">Start</a>
+      <a href="privacy.html">Datenschutz</a>
+      <a href="terms.html">AGB</a>
+      <a href="widerruf.html">Widerruf</a>
+      <a href="impressum.html">Impressum</a>
+    </nav>
+    <p>Kein Tracking, keine Werbung. Die App folgt der Systemsprache.</p>
+    <p>© 2026 Yuban · Stand: 25. November 2026</p>
+  </div>
+</footer>
 </body>
 </html>
